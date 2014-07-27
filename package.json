@@ -1,6 +1,6 @@
 {
   "name": "mesh-tree",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "An hash of the Medical Subject Heading (MeSH) tree",
   "main": "index.js",
   "scripts": {
