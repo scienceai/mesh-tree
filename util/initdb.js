@@ -1,60 +1,30 @@
-// initialize modules
-var fs = require('fs')
-  , path = require('path')
-  , cheerio = require('cheerio')
-  , XmlStream = require('xml-stream')
-  , levelup = require('levelup')
-  , _ = require('lodash');
+/*
+* Initializes levelgraph-n3 database from MeSH RDF N-triples
+*/
 
-// path variables
-var MESH_DESC_PATH = path.join(__dirname, '../data/mesh_desc_2015.xml')
-  , LEVELDB_DATA_PATH = path.join(__dirname, '../db');
+var levelgraph = require('levelgraph')
+  , levelgraphN3 = require('levelgraph-n3')
+  , db = levelgraphN3(levelgraph('./db'))
+  , fs = require('fs')
+  , expandHomeDir = require('expand-home-dir')
+  , progressStream = require('progress-stream');
 
-// initialize levelDB
-var db = levelup(LEVELDB_DATA_PATH);
+const meshN3path = expandHomeDir('~/data/mesh/RDF/mesh2015.nt');
+console.log('Importing MeSH RDF N-triple file at: ' + meshN3path);
 
-// stream XML file
-var xml = new XmlStream(fs.createReadStream(MESH_DESC_PATH));
+var fileStats = fs.statSync(meshN3path);
+var progstr = progressStream({
+  length: fileStats.size,
+  time: 1000
+});
+progstr.on('progress', function(progress) {
+  console.log(progress);
+});
 
-console.log('Processing MeSH file into levelDB...\n....................................');
-var i = 0;
-xml.collect('TreeNumber');
-xml.collect('Concept');
-xml.collect('SemanticType');
-xml.collect('Term');
-xml.on('endElement: DescriptorRecord', function(record) {
-  i++;
-  (i % 100 === 0) ? console.log('progress: ' + i) : null;
+var stream = fs.createReadStream(meshN3path)
+  .pipe(progstr)
+  .pipe(db.n3.putStream());
 
-  var uid = record['DescriptorUI'];
-
-  var treeNums = record['TreeNumberList']['TreeNumber'];
-
-  var conceptNode = record['ConceptList']['Concept'].filter(function(concept) {
-    return (concept['$']['PreferredConceptYN'] === 'Y');
-  })[0];
-  
-  var concept = conceptNode['ConceptName']['String'];
-  var conceptDesc = conceptNode['ScopeNote'];
-
-  var semanticTypes = [];
-  conceptNode['SemanticTypeList']['SemanticType'].forEach(function(type) {
-    semanticTypes.push(type['SemanticTypeName']);
-  });
-
-  var terms = [];
-  record['ConceptList']['Concept'].forEach(function(concept) {
-    concept['TermList']['Term'].forEach(function(term) {
-      if (term['$']['RecordPreferredTermYN'] === 'N') {
-        terms.push(term['String']);
-      }
-    });
-  });
-
-  console.log(uid);
-  console.log(treeNums);
-  console.log(concept);
-  console.log(conceptDesc);
-  console.log(terms);
-  console.log(semanticTypes);
+stream.on('finish', function() {
+  console.log('Import completed');
 });
