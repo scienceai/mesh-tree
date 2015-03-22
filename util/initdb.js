@@ -26,5 +26,5 @@ var stream = fs.createReadStream(meshN3path)
   .pipe(db.n3.putStream());
 
 stream.on('finish', function() {
-  console.log('Import completed');
+  console.log('Import completed.');
 });
