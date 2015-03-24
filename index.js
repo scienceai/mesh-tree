@@ -18,15 +18,15 @@ var meshTreeFuncs = {
   * 
   * Example: 'D000001' returns ['D03.438.221.173']
   */
-  getTreeNumbersByDescUI: function (ui) {
-    // example ui: D009369
+  getTreeNumbersByDescUI: function (desc_ui) {
+    // example desc_ui: D009369
     return new Promise(function (resolve, reject) {
       db.search(
         {
-          subject: mesh + ui,
+          subject: mesh + desc_ui,
           predicate: meshv + 'treeNumber',
           object: db.v('treeNumber')
-        }, {}, function(err, result) {
+        }, {}, function (err, result) {
           if (err) reject(err);
           var treeNumbers = _.map(result, function (item) {
             return item['treeNumber'].replace(mesh, '');
@@ -43,22 +43,22 @@ var meshTreeFuncs = {
   * 
   * Example: 'D000001' returns 'Calcimycin'
   */
-  getRecordPreferredTermByDescUI: function (ui) {
-    // example ui: D009369
+  getRecordPreferredTermByDescUI: function (desc_ui) {
+    // example desc_ui: D009369
     return new Promise(function (resolve, reject) {
       db.search(
         {
-          subject: mesh + ui,
+          subject: mesh + desc_ui,
           predicate: meshv + 'recordPreferredTerm',
           object: db.v('recordPreferredTermUI')
-        }, {}, function(err, result) {
+        }, {}, function (err, result) {
           if (err) reject(err);
           db.search(
             {
               subject: result[0]['recordPreferredTermUI'],
               predicate: meshv + 'prefLabel',
               object: db.v('term')
-            }, {}, function(err, result) {
+            }, {}, function (err, result) {
               if (err) reject(err);
               resolve(result[0]['term']);
             }
@@ -68,16 +68,22 @@ var meshTreeFuncs = {
     });
   },
 
-  getConceptUIsByDescUI: function (ui) {
+  /*
+  * Returns all concept UIs contained by descriptor record UI
+  * (both preferred and not)
+  * 
+  * Example: 'D000001' returns [ 'M0353609', 'M0000001' ]
+  */
+  getConceptUIsByDescUI: function (desc_ui) {
     return new Promise(function (resolve, reject) {
 
       async.map(['concept', 'preferredConcept'], function (pred, callback) {
         db.search(
           {
-            subject: mesh + ui,
+            subject: mesh + desc_ui,
             predicate: meshv + pred,
             object: db.v('conceptUI')
-          }, {}, function(err, result) {
+          }, {}, function (err, result) {
             if (err) callback(true, err);
             var conceptUIs = _.map(result, function (item) {
               return item['conceptUI'];
@@ -96,16 +102,22 @@ var meshTreeFuncs = {
 
   },
 
-  getTermUIsByConceptUI: function (ui) {
+  /*
+  * Returns all term UIs contained by concept UI
+  * (both preferred and not)
+  * 
+  * Example: 'M0353609' returns [ 'T000003', 'T000004', 'T000001' ]
+  */
+  getTermUIsByConceptUI: function (concept_ui) {
     return new Promise(function (resolve, reject) {
 
       async.map(['term', 'preferredTerm'], function (pred, callback) {
         db.search(
           {
-            subject: mesh + ui,
+            subject: mesh + concept_ui,
             predicate: meshv + pred,
             object: db.v('termUI')
-          }, {}, function(err, result) {
+          }, {}, function (err, result) {
             if (err) callback(true, err);
             var termUIs = _.map(result, function (item) {
               return item['termUI'];
@@ -124,16 +136,22 @@ var meshTreeFuncs = {
 
   },
 
-  getTermsByTermUI: function (ui) {
+  /*
+  * Returns all terms contained by term UI
+  * (both preferred and not)
+  * 
+  * Example: 'T000003' returns [ '"A23187, Antibiotic"', '"Antibiotic A23187"' ]
+  */
+  getTermsByTermUI: function (term_ui) {
     return new Promise(function (resolve, reject) {
 
       async.map(['label', 'altLabel', 'prefLabel'], function (pred, callback) {
         db.search(
           {
-            subject: mesh + ui,
+            subject: mesh + term_ui,
             predicate: meshv + pred,
             object: db.v('label')
-          }, {}, function(err, result) {
+          }, {}, function (err, result) {
             if (err) callback(true, err);
             var labels = _.map(result, function (item) {
               return item['label'];
@@ -158,15 +176,15 @@ var meshTreeFuncs = {
   * 
   * Example: 'D000001' returns [ '"A23187, Antibiotic"', '"Antibiotic A23187"', '"A23187"', '"A 23187"', '"A-23187"', '"Calcimycin"' ]
   */
-  getAllTermsByDescUI: function (ui) {
-    // example ui: D009369
+  getAllTermsByDescUI: function (desc_ui) {
+    // example desc_ui: D009369
     var promise_conceptUIs = this.getConceptUIsByDescUI;
     var promise_termUIs = this.getTermUIsByConceptUI;
     var promise_labels = this.getTermsByTermUI;
 
     return new Promise(function (resolve, reject) {
 
-      promise_conceptUIs(ui).then(function (conceptUIs) {
+      promise_conceptUIs(desc_ui).then(function (conceptUIs) {
 
         async.map(conceptUIs, function (conceptUI, callback) {
           promise_termUIs(conceptUI).then(function (termUIs) {
