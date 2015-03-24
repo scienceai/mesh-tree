@@ -22,9 +22,7 @@ progstr.on('progress', function(progress) {
 });
 
 var stream = fs.createReadStream(meshN3path)
-  .pipe(progstr)
+  .pipe(progstr).on('finish', function() {
+    console.log('Import completed.');
+  })
   .pipe(db.n3.putStream());
-
-stream.on('finish', function() {
-  console.log('Import completed.');
-});
