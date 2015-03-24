@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "node_modules/.bin/mocha",
-    "initdb": "node ./util/initdb.js"
+    "initdb": "node ./util/initdb.js",
+    "server": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -43,7 +44,9 @@
     "levelgraph-n3": "^0.4.0",
     "levelup": "^0.19.0",
     "lodash": "^3.5.0",
+    "prettyjson": "^1.1.0",
     "progress-stream": "^1.0.1",
-    "xml-stream": "^0.4.5"
+    "xml-stream": "^0.4.5",
+    "zmq": "^2.10.0"
   }
 }

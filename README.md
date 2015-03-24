@@ -35,6 +35,30 @@ This package can be run as a service (TODO) or be imported as a module.
 
 #### Running as service
 
+Can be run as service with command `npm run server`, which listens for requests at `localhost` on port `7770` by default. The API is simply is a serialized JSON object with the following fields:
+
+`job_id`: job unique identifier
+`taskname`: function name as a string (see API below)
+`payload`: argument(s), for example `desc_ui`
+
+An simple example of a client function in python:
+
+```
+def mesh_tree_rpc(taskname, *args):
+    HOST = '127.0.0.1'
+    PORT = 7770
+    req_socket = zmq.Context().socket(zmq.REQ)
+    req_socket.connect('tcp://{}:{}'.format(HOST, PORT))
+    req_obj = {
+        'job_id': str(uuid.uuid4()),
+        'taskname': taskname,
+        'payload': args
+    }
+    req_socket.send(json.dumps(req_obj).encode('utf8'))
+    result = json.loads(req_socket.recv().decode('utf8'))
+    return result
+```
+
 #### API
 
 ##### getTreeNumbersByDescUI (desc_ui)

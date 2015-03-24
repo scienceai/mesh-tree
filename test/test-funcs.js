@@ -1,5 +1,3 @@
-
-
 var assert = require('assert')
   , meshTreeFuncs = require('../index.js');
 
