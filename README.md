@@ -31,14 +31,16 @@ We utilize LevelGraph (which is built on top of LevelDB) with the LevelGraph-N3 
 
 ## Usage
 
-This package can be run as a service (TODO) or be imported as a module.
+This package can be run as a service or be imported as a module.
 
 #### Running as service
 
 Can be run as service with command `npm run server`, which listens for requests at `localhost` on port `7770` by default. The API is simply is a serialized JSON object with the following fields:
 
 `job_id`: job unique identifier
+
 `taskname`: function name as a string (see API below)
+
 `payload`: argument(s), for example `desc_ui`
 
 An simple example of a client function in python:
