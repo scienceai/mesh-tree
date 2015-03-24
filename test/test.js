@@ -1,3 +1,5 @@
+
+
 var assert = require('assert')
   , meshTreeFuncs = require('../index.js');
 
@@ -32,13 +34,53 @@ describe('get tree numbers by UI', function () {
   })
 });
 
+// getDescUIByTreeNumber
+describe('get descriptor UI for tree number', function () {
+  describe('D03.438.221.173', function () {
+    var resultExpected = 'D000001';
+    it('should return descriptor record UI: ' + resultExpected.toString(), function (done) {
+      meshTreeFuncs.getDescUIByTreeNumber('D03.438.221.173').then(function (result) {
+        assert.strictEqual(result, resultExpected);
+        done();
+      });
+    })
+  })
+  describe('C04', function () {
+    var resultExpected = 'D009369';
+    it('should return descriptor record UI: ' + resultExpected.toString(), function (done) {
+      meshTreeFuncs.getDescUIByTreeNumber('C04').then(function (result) {
+        assert.strictEqual(result, resultExpected);
+        done();
+      });
+    })
+  })
+  describe('A17.360.296', function () {
+    var resultExpected = 'D005138';
+    it('should return descriptor record UI: ' + resultExpected.toString(), function (done) {
+      meshTreeFuncs.getDescUIByTreeNumber('A17.360.296').then(function (result) {
+        assert.strictEqual(result, resultExpected);
+        done();
+      });
+    })
+  })
+  describe('A01.456.505.420.338', function () {
+    var resultExpected = 'D005138';
+    it('should return descriptor record UI: ' + resultExpected.toString(), function (done) {
+      meshTreeFuncs.getDescUIByTreeNumber('A01.456.505.420.338').then(function (result) {
+        assert.strictEqual(result, resultExpected);
+        done();
+      });
+    })
+  })
+});
+
 // getRecordPreferredTermByDescUI
 describe('get record preferred term by UI', function () {
   describe('D000001', function () {
     var resultExpected = '"Calcimycin"';
     it('should return: ' + resultExpected.toString(), function (done) {
       meshTreeFuncs.getRecordPreferredTermByDescUI('D000001').then(function (result) {
-        assert.equal(result, resultExpected);
+        assert.strictEqual(result, resultExpected);
         done();
       });
     })
@@ -47,7 +89,7 @@ describe('get record preferred term by UI', function () {
     var resultExpected = '"Neoplasms"';
     it('should return: ' + resultExpected.toString(), function (done) {
       meshTreeFuncs.getRecordPreferredTermByDescUI('D009369').then(function (result) {
-        assert.equal(result, resultExpected);
+        assert.strictEqual(result, resultExpected);
         done();
       });
     })
@@ -56,7 +98,38 @@ describe('get record preferred term by UI', function () {
     var resultExpected = '"Eyebrows"';
     it('should return: ' + resultExpected.toString(), function (done) {
       meshTreeFuncs.getRecordPreferredTermByDescUI('D005138').then(function (result) {
-        assert.equal(result, resultExpected);
+        assert.strictEqual(result, resultExpected);
+        done();
+      });
+    })
+  })
+});
+
+// getPreferredConceptByDescUI
+describe('get preferred concept UI for descriptor record UI', function () {
+  describe('D000001', function () {
+    var resultExpected = 'M0000001';
+    it('should return correct concept UI: ' + resultExpected.toString(), function (done) {
+      meshTreeFuncs.getPreferredConceptByDescUI('D000001').then(function (result) {
+        assert.strictEqual(result, resultExpected);
+        done();
+      });
+    })
+  })
+  describe('D009369', function () {
+    var resultExpected = 'M0014585';
+    it('should return correct concept UIs: ' + resultExpected.toString(), function (done) {
+      meshTreeFuncs.getPreferredConceptByDescUI('D009369').then(function (result) {
+        assert.strictEqual(result, resultExpected);
+        done();
+      });
+    })
+  })
+  describe('D005138', function () {
+    var resultExpected = 'M0008101';
+    it('should return correct concept UIs: ' + resultExpected.toString(), function (done) {
+      meshTreeFuncs.getPreferredConceptByDescUI('D005138').then(function (result) {
+        assert.strictEqual(result, resultExpected);
         done();
       });
     })
@@ -180,6 +253,68 @@ describe('get all terms by UI', function () {
     var resultExpected = ['"Eyebrow"', '"Eyebrows"'];
     it('should return all terms for concept Eyebrows: ' + resultExpected.toString(), function (done) {
       meshTreeFuncs.getAllTermsByDescUI('D005138').then(function (result) {
+        assert.deepEqual(result.sort(), resultExpected.sort());
+        done();
+      });
+    })
+  })
+});
+
+// getScopeNoteByDescUI
+describe('get scope note for descriptor UI', function () {
+  describe('D000001', function () {
+    it('should return the scope note for concept Calcimycin', function (done) {
+      meshTreeFuncs.getScopeNoteByDescUI('D000001').then(function (result) {
+        console.log(result);
+        assert.equal(result.length>10, true);
+        done();
+      });
+    })
+  })
+  describe('D009369', function () {
+    it('should return the scope note for concept Neoplasms', function (done) {
+      meshTreeFuncs.getScopeNoteByDescUI('D009369').then(function (result) {
+        console.log(result);
+        assert.equal(result.length>10, true);
+        done();
+      });
+    })
+  })
+  describe('D005138', function () {
+    it('should return the scope note for concept Eyebrows', function (done) {
+      meshTreeFuncs.getScopeNoteByDescUI('D005138').then(function (result) {
+        console.log(result);
+        assert.equal(result.length>10, true);
+        done();
+      });
+    })
+  })
+});
+
+// getParentDescUIsForDescUI
+describe('get parent descriptor UIs for a descriptor UI', function () {
+  describe('D000001', function () {
+    var resultExpected = ['D001583'];
+    it('should return single parent desc UI: ' + resultExpected.toString(), function (done) {
+      meshTreeFuncs.getParentDescUIsForDescUI('D000001').then(function (result) {
+        assert.deepEqual(result.sort(), resultExpected.sort());
+        done();
+      });
+    })
+  })
+  describe('D009369', function () {
+    var resultExpected = [];
+    it('should return no desc UIs (top level): ' + resultExpected.toString(), function (done) {
+      meshTreeFuncs.getParentDescUIsForDescUI('D009369').then(function (result) {
+        assert.deepEqual(result.sort(), resultExpected.sort());
+        done();
+      });
+    })
+  })
+  describe('D005138', function () {
+    var resultExpected = ['D006197', 'D005123'];
+    it('should return two parent desc UIs: ' + resultExpected.toString(), function (done) {
+      meshTreeFuncs.getParentDescUIsForDescUI('D005138').then(function (result) {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });

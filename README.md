@@ -19,8 +19,83 @@ See [HHS/meshrdf](https://github.com/HHS/meshrdf) for instructions on transformi
 
 #### 3. Install dependencies
 
-Run `npm install`.
+`npm install`
 
 #### 4. Initialize DB
 
 We utilize LevelGraph (which is built on top of LevelDB) with the LevelGraph-N3 extension for storing and accessing the MeSH ontology as RDF N-triples. Run `npm run initdb` to stream the RDF data into the datastore.
+
+## Tests
+
+`npm test` runs Mocha tests.
+
+## Usage
+
+This package can be run as a service (TODO) or be imported as a module.
+
+#### Running as service
+
+#### API
+
+##### getTreeNumbersByDescUI (desc_ui)
+
+Returns array of tree numbers by descriptor record unique identifier.
+
+Example: 'D000001' returns ['D03.438.221.173']
+
+##### getDescUIByTreeNumber (tree_num)
+
+Returns descriptor record unique identifier by tree number.
+
+Example: 'D03.438.221.173' returns 'D000001'
+
+##### getRecordPreferredTermByDescUI (desc_ui)
+
+Returns the record preferred term by descriptor record unique identifier (i.e., the preferred term of the preferred concept).
+
+Example: 'D000001' returns 'Calcimycin'
+  
+##### getPreferredConceptByDescUI (desc_ui)
+
+Returns preferred concept UI for descriptor record UI.
+
+Example: 'D000001' returns 'M0000001'
+
+##### getConceptUIsByDescUI (desc_ui)
+
+Returns all concept UIs contained by descriptor record UI (both preferred and not).
+
+Example: 'D000001' returns [ 'M0353609', 'M0000001' ]
+  
+##### getTermUIsByConceptUI (concept_ui)
+
+Returns all term UIs contained by concept UI (both preferred and not).
+
+Example: 'M0353609' returns [ 'T000003', 'T000004', 'T000001' ]
+
+##### getTermsByTermUI (term_ui)
+
+Returns all terms contained by term UI (both preferred and not).
+
+Example: 'T000003' returns [ '"A23187, Antibiotic"', '"Antibiotic A23187"' ]
+
+##### getAllTermsByDescUI (desc_ui)
+
+Returns all terms by descriptor record unique identifier (i.e., all terms for all concepts, both preferred and not).
+
+Example: 'D000001' returns [ '"A23187, Antibiotic"', '"Antibiotic A23187"', '"A23187"', '"A 23187"', '"A-23187"', '"Calcimycin"' ]
+
+##### getScopeNoteByDescUI (desc_ui)
+
+Returns scope note for descriptor record unique identifier (scope notes are contained in the preferred concept record).
+
+Example: 'D000001', via concept 'M0000001', returns "An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems."
+
+##### getParentDescUIsForDescUI (desc_ui)
+
+Returns parent descriptor records UIs (returns an array as records can exist in multiple tree branches).
+
+Example: 'D000001' returns ['D001583']
+Example: 'D005138' returns ['D006197', 'D005123']
+
+...

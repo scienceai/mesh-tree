@@ -38,6 +38,28 @@ var meshTreeFuncs = {
   },
 
   /*
+  * Returns descriptor record unique identifier by tree number
+  * 
+  * Example: 'D03.438.221.173' returns 'D000001'
+  */
+  getDescUIByTreeNumber: function (tree_num) {
+    // example tree_num: 'D03.438.221.173'
+    return new Promise(function (resolve, reject) {
+      db.search(
+        {
+          subject: db.v('descUI'),
+          predicate: meshv + 'treeNumber',
+          object: mesh + tree_num
+        }, {}, function (err, result) {
+          if (err) reject(err);
+          if (_.isEmpty(result)) reject('None returned.');
+          resolve(result[0]['descUI'].replace(mesh, ''));
+        }
+      );
+    });
+  },
+
+  /*
   * Returns the record preferred term by descriptor record unique identifier 
   * (i.e., the preferred term of the preferred concept)
   * 
@@ -60,6 +82,7 @@ var meshTreeFuncs = {
               object: db.v('term')
             }, {}, function (err, result) {
               if (err) reject(err);
+              if (_.isEmpty(result)) reject('None returned.');
               resolve(result[0]['term']);
             }
           );
@@ -69,12 +92,38 @@ var meshTreeFuncs = {
   },
 
   /*
+  * Returns preferred concept UI for descriptor record UI
+  * 
+  * Example: 'D000001' returns 'M0000001'
+  */
+  getPreferredConceptByDescUI: function (desc_ui) {
+    // example desc_ui: D009369
+    return new Promise(function (resolve, reject) {
+
+      db.search(
+        {
+          subject: mesh + desc_ui,
+          predicate: meshv + 'preferredConcept',
+          object: db.v('conceptUI')
+        }, {}, function (err, result) {
+          if (err) reject(err);
+          if (_.isEmpty(result)) reject('None returned.');
+          resolve(result[0]['conceptUI'].replace(mesh, ''));
+        }
+      );
+
+    });
+
+  },
+
+  /*
   * Returns all concept UIs contained by descriptor record UI
   * (both preferred and not)
   * 
   * Example: 'D000001' returns [ 'M0353609', 'M0000001' ]
   */
   getConceptUIsByDescUI: function (desc_ui) {
+    // example desc_ui: D009369
     return new Promise(function (resolve, reject) {
 
       async.map(['concept', 'preferredConcept'], function (pred, callback) {
@@ -92,6 +141,7 @@ var meshTreeFuncs = {
           }
         );
       }, function (err, results) {
+        if (err) reject(err);
         var allConceptUIs = _.map(_.flatten(results), function (item) {
             return item.replace(mesh, '');
         });
@@ -109,6 +159,7 @@ var meshTreeFuncs = {
   * Example: 'M0353609' returns [ 'T000003', 'T000004', 'T000001' ]
   */
   getTermUIsByConceptUI: function (concept_ui) {
+    // example concept_ui: M0353609
     return new Promise(function (resolve, reject) {
 
       async.map(['term', 'preferredTerm'], function (pred, callback) {
@@ -126,6 +177,7 @@ var meshTreeFuncs = {
           }
         );
       }, function (err, results) {
+        if (err) reject(err);
         var allTermUIs = _.map(_.flatten(results), function (item) {
             return item.replace(mesh, '');
         });
@@ -143,6 +195,7 @@ var meshTreeFuncs = {
   * Example: 'T000003' returns [ '"A23187, Antibiotic"', '"Antibiotic A23187"' ]
   */
   getTermsByTermUI: function (term_ui) {
+    // example term_ui: T000003
     return new Promise(function (resolve, reject) {
 
       async.map(['label', 'altLabel', 'prefLabel'], function (pred, callback) {
@@ -160,6 +213,7 @@ var meshTreeFuncs = {
           }
         );
       }, function (err, results) {
+        if (err) reject(err);
         var allLabels = _.map(_.flatten(results), function (item) {
             return item;
         });
@@ -178,9 +232,9 @@ var meshTreeFuncs = {
   */
   getAllTermsByDescUI: function (desc_ui) {
     // example desc_ui: D009369
-    var promise_conceptUIs = this.getConceptUIsByDescUI;
-    var promise_termUIs = this.getTermUIsByConceptUI;
-    var promise_labels = this.getTermsByTermUI;
+    let promise_conceptUIs = this.getConceptUIsByDescUI;
+    let promise_termUIs = this.getTermUIsByConceptUI;
+    let promise_labels = this.getTermsByTermUI;
 
     return new Promise(function (resolve, reject) {
 
@@ -191,16 +245,96 @@ var meshTreeFuncs = {
             callback(null, termUIs);
           })
         }, function (err, results) {
+          if (err) reject(err);
 
           async.map(_.flatten(results), function (termUI, callback) {
             promise_labels(termUI).then(function (labels) {
               callback(null, labels)
             })
           }, function (err, results) {
+            if (err) reject(err);
+
             resolve(_.flatten(results));
           });
 
         });
+      });
+    });
+  },
+
+  /*
+  * Returns scope note for descriptor record unique identifier
+  * (scope notes are contained in the preferred concept record)
+  * 
+  * Example: 'D000001', via concept 'M0000001', returns "An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems."
+  */
+  getScopeNoteByDescUI: function (desc_ui) {
+    // example desc_ui: D009369
+    let promise_conceptUI = this.getPreferredConceptByDescUI;
+
+    return new Promise(function (resolve, reject) {
+
+      promise_conceptUI(desc_ui).then(function (conceptUI) {
+
+        db.search(
+          {
+            subject: mesh + conceptUI,
+            predicate: meshv + 'scopeNote',
+            object: db.v('scopeNote')
+          }, {}, function (err, result) {
+            if (err) reject(err);
+            if (_.isEmpty(result)) {
+              resolve('');
+            } else {
+              resolve(result[0]['scopeNote']);
+            }
+          }
+        );
+
+      });
+    });
+  },
+
+  /*
+  * Returns parent descriptor records UIs
+  * (returns an array as records can exist in multiple tree branches)
+  * 
+  * Example: 'D000001' returns ['D001583']
+  *          'D005138' returns ['D006197', 'D005123']
+  */
+  getParentDescUIsForDescUI: function (desc_ui) {
+    // example desc_ui: D009369
+    let promise_treeNums = this.getTreeNumbersByDescUI;
+    let promise_descUI = this.getDescUIByTreeNumber;
+
+    return new Promise(function (resolve, reject) {
+
+      promise_treeNums(desc_ui).then(function (treeNums) {
+
+        async.map(treeNums, function (treeNum, callback) {
+
+          db.search(
+            {
+              subject: mesh + treeNum,
+              predicate: meshv + 'broaderTransitive',
+              object: db.v('treeNum')
+            }, {}, function (err, result) {
+              if (err) callback(true, err);
+              if (_.isEmpty(result)) {
+                callback(null, []);
+              } else {
+                promise_descUI(result[0]['treeNum'].replace(mesh, '')).then(function (descUI) {
+                  callback(null, descUI);
+                });
+              }
+            }
+          );
+
+        }, function (err, results) {
+          if (err) reject(err);
+          resolve(_.flatten(results));
+        });
+
       });
     });
   },
