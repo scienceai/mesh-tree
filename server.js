@@ -1,4 +1,5 @@
 var meshTreeFuncs = require('./index.js')
+  , co = require('co')
   , zmq = require('zmq')
   , prettyjson = require('prettyjson');
 
@@ -20,7 +21,7 @@ responder.on('message', function (bufReq) {
   console.log('Received job ' + reqMsg.job_id);
   console.log('...Job info: ');
   console.log(prettyjson.render(reqMsg));
-  (meshTreeFuncs[reqMsg.taskname])(reqMsg.payload).then(function (result) {
+  co((meshTreeFuncs[reqMsg.taskname])(reqMsg.payload)).then(function (result) {
 
     respObj = {
       error: false,

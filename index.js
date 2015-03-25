@@ -4,7 +4,9 @@ var levelgraph = require('levelgraph')
   , levelgraphN3 = require('levelgraph-n3')
   , db = levelgraphN3(levelgraph('./db'))
   , _ = require('lodash')
-  , async = require('async');
+  , Bluebird = require('bluebird');
+
+var dbSearch = Bluebird.promisify(db.search);
 
 const mesh = 'http://id.nlm.nih.gov/mesh/'
   , meshv = 'http://id.nlm.nih.gov/mesh/vocab#'
@@ -18,23 +20,25 @@ var meshTreeFuncs = {
   * 
   * Example: 'D000001' returns ['D03.438.221.173']
   */
-  getTreeNumbersByDescUI: function (desc_ui) {
-    // example desc_ui: D009369
-    return new Promise(function (resolve, reject) {
-      db.search(
-        {
-          subject: mesh + desc_ui,
-          predicate: meshv + 'treeNumber',
-          object: db.v('treeNumber')
-        }, {}, function (err, result) {
-          if (err) reject(err);
-          var treeNumbers = _.map(result, function (item) {
-            return item['treeNumber'].replace(mesh, '');
-          });
-          resolve(treeNumbers);
-        }
-      );
-    });
+  getTreeNumbersByDescUI: function* (desc_ui) {
+
+    try {
+
+      let result = yield dbSearch({
+        subject: mesh + desc_ui,
+        predicate: meshv + 'treeNumber',
+        object: db.v('treeNumber')
+      }, {});
+
+      let treeNumbers = _.map(result, function (item) {
+        return item['treeNumber'].replace(mesh, '');
+      });
+      return treeNumbers;
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
+
   },
 
   /*
@@ -42,21 +46,23 @@ var meshTreeFuncs = {
   * 
   * Example: 'D03.438.221.173' returns 'D000001'
   */
-  getDescUIByTreeNumber: function (tree_num) {
-    // example tree_num: 'D03.438.221.173'
-    return new Promise(function (resolve, reject) {
-      db.search(
-        {
-          subject: db.v('descUI'),
-          predicate: meshv + 'treeNumber',
-          object: mesh + tree_num
-        }, {}, function (err, result) {
-          if (err) reject(err);
-          if (_.isEmpty(result)) reject('None returned.');
-          resolve(result[0]['descUI'].replace(mesh, ''));
-        }
-      );
-    });
+  getDescUIByTreeNumber: function* (tree_num) {
+
+    try {
+
+      let result = yield dbSearch({
+        subject: db.v('descUI'),
+        predicate: meshv + 'treeNumber',
+        object: mesh + tree_num
+      }, {});
+      if (_.isEmpty(result)) throw('empty result.');
+
+      return result[0]['descUI'].replace(mesh, '');
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
+
   },
 
   /*
@@ -65,30 +71,30 @@ var meshTreeFuncs = {
   * 
   * Example: 'D000001' returns 'Calcimycin'
   */
-  getRecordPreferredTermByDescUI: function (desc_ui) {
-    // example desc_ui: D009369
-    return new Promise(function (resolve, reject) {
-      db.search(
-        {
-          subject: mesh + desc_ui,
-          predicate: meshv + 'recordPreferredTerm',
-          object: db.v('recordPreferredTermUI')
-        }, {}, function (err, result) {
-          if (err) reject(err);
-          db.search(
-            {
-              subject: result[0]['recordPreferredTermUI'],
-              predicate: meshv + 'prefLabel',
-              object: db.v('term')
-            }, {}, function (err, result) {
-              if (err) reject(err);
-              if (_.isEmpty(result)) reject('None returned.');
-              resolve(result[0]['term']);
-            }
-          );
-        }
-      );
-    });
+  getRecordPreferredTermByDescUI: function* (desc_ui) {
+
+    try {
+
+      let result1 = yield dbSearch({
+        subject: mesh + desc_ui,
+        predicate: meshv + 'recordPreferredTerm',
+        object: db.v('recordPreferredTermUI')
+      }, {});
+      if (_.isEmpty(result1)) throw('empty result.');
+
+      let result2 = yield dbSearch({
+        subject: result1[0]['recordPreferredTermUI'],
+        predicate: meshv + 'prefLabel',
+        object: db.v('term')
+      }, {});
+      if (_.isEmpty(result2)) throw('empty result.');
+
+      return result2[0]['term'];
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
+
   },
 
   /*
@@ -96,23 +102,22 @@ var meshTreeFuncs = {
   * 
   * Example: 'D000001' returns 'M0000001'
   */
-  getPreferredConceptByDescUI: function (desc_ui) {
-    // example desc_ui: D009369
-    return new Promise(function (resolve, reject) {
+  getPreferredConceptByDescUI: function* (desc_ui) {
 
-      db.search(
-        {
-          subject: mesh + desc_ui,
-          predicate: meshv + 'preferredConcept',
-          object: db.v('conceptUI')
-        }, {}, function (err, result) {
-          if (err) reject(err);
-          if (_.isEmpty(result)) reject('None returned.');
-          resolve(result[0]['conceptUI'].replace(mesh, ''));
-        }
-      );
+    try {
 
-    });
+      let result = yield dbSearch({
+        subject: mesh + desc_ui,
+        predicate: meshv + 'preferredConcept',
+        object: db.v('conceptUI')
+      }, {});
+      if (_.isEmpty(result)) throw('empty result.');
+
+      return result[0]['conceptUI'].replace(mesh, '');
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
 
   },
 
@@ -122,33 +127,31 @@ var meshTreeFuncs = {
   * 
   * Example: 'D000001' returns [ 'M0353609', 'M0000001' ]
   */
-  getConceptUIsByDescUI: function (desc_ui) {
-    // example desc_ui: D009369
-    return new Promise(function (resolve, reject) {
+  getConceptUIsByDescUI: function* (desc_ui) {
 
-      async.map(['concept', 'preferredConcept'], function (pred, callback) {
-        db.search(
-          {
-            subject: mesh + desc_ui,
-            predicate: meshv + pred,
-            object: db.v('conceptUI')
-          }, {}, function (err, result) {
-            if (err) callback(true, err);
-            var conceptUIs = _.map(result, function (item) {
-              return item['conceptUI'];
-            });
-            callback(null, conceptUIs);
-          }
-        );
-      }, function (err, results) {
-        if (err) reject(err);
-        var allConceptUIs = _.map(_.flatten(results), function (item) {
-            return item.replace(mesh, '');
+    try {
+
+      let allConceptUIs = [];
+
+      for (let pred of ['concept', 'preferredConcept']) {
+
+        let result = yield dbSearch({
+          subject: mesh + desc_ui,
+          predicate: meshv + pred,
+          object: db.v('conceptUI')
+        }, {});
+
+        result.forEach(function (item) {
+          allConceptUIs.push(item['conceptUI'].replace(mesh, ''));
         });
-        resolve(allConceptUIs);
-      });
 
-    });
+      }
+
+      return allConceptUIs;
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
 
   },
 
@@ -158,33 +161,31 @@ var meshTreeFuncs = {
   * 
   * Example: 'M0353609' returns [ 'T000003', 'T000004', 'T000001' ]
   */
-  getTermUIsByConceptUI: function (concept_ui) {
-    // example concept_ui: M0353609
-    return new Promise(function (resolve, reject) {
+  getTermUIsByConceptUI: function* (concept_ui) {
 
-      async.map(['term', 'preferredTerm'], function (pred, callback) {
-        db.search(
-          {
-            subject: mesh + concept_ui,
-            predicate: meshv + pred,
-            object: db.v('termUI')
-          }, {}, function (err, result) {
-            if (err) callback(true, err);
-            var termUIs = _.map(result, function (item) {
-              return item['termUI'];
-            });
-            callback(null, termUIs);
-          }
-        );
-      }, function (err, results) {
-        if (err) reject(err);
-        var allTermUIs = _.map(_.flatten(results), function (item) {
-            return item.replace(mesh, '');
+    try {
+
+      let allTermUIs = [];
+
+      for (let pred of ['term', 'preferredTerm']) {
+
+        let result = yield dbSearch({
+          subject: mesh + concept_ui,
+          predicate: meshv + pred,
+          object: db.v('termUI')
+        }, {});
+
+        result.forEach(function (item) {
+          allTermUIs.push(item['termUI'].replace(mesh, ''));
         });
-        resolve(allTermUIs);
-      });
 
-    });
+      }
+
+      return allTermUIs;
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
 
   },
 
@@ -194,33 +195,31 @@ var meshTreeFuncs = {
   * 
   * Example: 'T000003' returns [ '"A23187, Antibiotic"', '"Antibiotic A23187"' ]
   */
-  getTermsByTermUI: function (term_ui) {
-    // example term_ui: T000003
-    return new Promise(function (resolve, reject) {
+  getTermsByTermUI: function* (term_ui) {
 
-      async.map(['label', 'altLabel', 'prefLabel'], function (pred, callback) {
-        db.search(
-          {
-            subject: mesh + term_ui,
-            predicate: meshv + pred,
-            object: db.v('label')
-          }, {}, function (err, result) {
-            if (err) callback(true, err);
-            var labels = _.map(result, function (item) {
-              return item['label'];
-            });
-            callback(null, labels);
-          }
-        );
-      }, function (err, results) {
-        if (err) reject(err);
-        var allLabels = _.map(_.flatten(results), function (item) {
-            return item;
+    try {
+
+      let allLabels = [];
+
+      for (let pred of ['label', 'altLabel', 'prefLabel']) {
+
+        let result = yield dbSearch({
+          subject: mesh + term_ui,
+          predicate: meshv + pred,
+          object: db.v('label')
+        }, {});
+
+        result.forEach(function (item) {
+          allLabels.push(item['label']);
         });
-        resolve(allLabels);
-      });
 
-    });
+      }
+
+      return allLabels;
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
 
   },
 
@@ -230,36 +229,29 @@ var meshTreeFuncs = {
   * 
   * Example: 'D000001' returns [ '"A23187, Antibiotic"', '"Antibiotic A23187"', '"A23187"', '"A 23187"', '"A-23187"', '"Calcimycin"' ]
   */
-  getAllTermsByDescUI: function (desc_ui) {
-    // example desc_ui: D009369
-    let promise_conceptUIs = this.getConceptUIsByDescUI;
-    let promise_termUIs = this.getTermUIsByConceptUI;
-    let promise_labels = this.getTermsByTermUI;
+  getAllTermsByDescUI: function* (desc_ui) {
 
-    return new Promise(function (resolve, reject) {
+    try {
 
-      promise_conceptUIs(desc_ui).then(function (conceptUIs) {
+      let allTerms = [];
 
-        async.map(conceptUIs, function (conceptUI, callback) {
-          promise_termUIs(conceptUI).then(function (termUIs) {
-            callback(null, termUIs);
+      let conceptUIs = yield this.getConceptUIsByDescUI(desc_ui);
+      for (let concept_ui of conceptUIs) {
+        let termUIs = yield this.getTermUIsByConceptUI(concept_ui);
+        for (let term_ui of termUIs) {
+          let labels = yield this.getTermsByTermUI(term_ui);
+          labels.forEach(function (label) {
+            allTerms.push(label);
           })
-        }, function (err, results) {
-          if (err) reject(err);
+        }
+      }
 
-          async.map(_.flatten(results), function (termUI, callback) {
-            promise_labels(termUI).then(function (labels) {
-              callback(null, labels)
-            })
-          }, function (err, results) {
-            if (err) reject(err);
+      return allTerms;
 
-            resolve(_.flatten(results));
-          });
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
 
-        });
-      });
-    });
   },
 
   /*
@@ -268,31 +260,28 @@ var meshTreeFuncs = {
   * 
   * Example: 'D000001', via concept 'M0000001', returns "An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems."
   */
-  getScopeNoteByDescUI: function (desc_ui) {
-    // example desc_ui: D009369
-    let promise_conceptUI = this.getPreferredConceptByDescUI;
+  getScopeNoteByDescUI: function* (desc_ui) {
 
-    return new Promise(function (resolve, reject) {
+    try {
 
-      promise_conceptUI(desc_ui).then(function (conceptUI) {
+      let concept_ui = yield this.getPreferredConceptByDescUI(desc_ui);
 
-        db.search(
-          {
-            subject: mesh + conceptUI,
-            predicate: meshv + 'scopeNote',
-            object: db.v('scopeNote')
-          }, {}, function (err, result) {
-            if (err) reject(err);
-            if (_.isEmpty(result)) {
-              resolve('');
-            } else {
-              resolve(result[0]['scopeNote']);
-            }
-          }
-        );
+      let result = yield dbSearch({
+        subject: mesh + concept_ui,
+        predicate: meshv + 'scopeNote',
+        object: db.v('scopeNote')
+      }, {});
 
-      });
-    });
+      if (_.isEmpty(result)) {
+        return '';
+      } else {
+        return result[0]['scopeNote'];
+      }
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
+
   },
 
   /*
@@ -302,41 +291,35 @@ var meshTreeFuncs = {
   * Example: 'D000001' returns ['D001583']
   *          'D005138' returns ['D006197', 'D005123']
   */
-  getParentDescUIsForDescUI: function (desc_ui) {
-    // example desc_ui: D009369
-    let promise_treeNums = this.getTreeNumbersByDescUI;
-    let promise_descUI = this.getDescUIByTreeNumber;
+  getParentDescUIsForDescUI: function* (desc_ui) {
 
-    return new Promise(function (resolve, reject) {
+    try {
 
-      promise_treeNums(desc_ui).then(function (treeNums) {
+      let parentDescUIs = [];
 
-        async.map(treeNums, function (treeNum, callback) {
+      let treeNums = yield this.getTreeNumbersByDescUI(desc_ui);
 
-          db.search(
-            {
-              subject: mesh + treeNum,
-              predicate: meshv + 'broaderTransitive',
-              object: db.v('treeNum')
-            }, {}, function (err, result) {
-              if (err) callback(true, err);
-              if (_.isEmpty(result)) {
-                callback(null, []);
-              } else {
-                promise_descUI(result[0]['treeNum'].replace(mesh, '')).then(function (descUI) {
-                  callback(null, descUI);
-                });
-              }
-            }
-          );
+      for (let treeNum of treeNums) {
 
-        }, function (err, results) {
-          if (err) reject(err);
-          resolve(_.flatten(results));
-        });
+        let result = yield dbSearch({
+          subject: mesh + treeNum,
+          predicate: meshv + 'broaderTransitive',
+          object: db.v('treeNum')
+        }, {});
 
-      });
-    });
+        if (!_.isEmpty(result)) {
+          let descUI = yield this.getDescUIByTreeNumber(result[0]['treeNum'].replace(mesh, ''));
+          parentDescUIs.push(descUI);
+        }
+
+      }
+
+      return parentDescUIs;
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
+
   },
 
 };
