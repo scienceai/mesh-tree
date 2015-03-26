@@ -8,6 +8,8 @@ var levelgraph = require('levelgraph')
 
 var dbSearch = Bluebird.promisify(db.search);
 
+var wikipedia = require('./lib/wikipedia');
+
 const mesh = 'http://id.nlm.nih.gov/mesh/'
   , meshv = 'http://id.nlm.nih.gov/mesh/vocab#'
   , rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
@@ -89,7 +91,7 @@ var meshTreeFuncs = {
       }, {});
       if (_.isEmpty(result2)) throw('empty result.');
 
-      return result2[0]['term'];
+      return result2[0]['term'].replace(/\"/g, '');
 
     } catch (err) {
       console.log('Error: ' + err);
@@ -193,7 +195,7 @@ var meshTreeFuncs = {
   * Returns all terms contained by term UI
   * (both preferred and not)
   * 
-  * Example: 'T000003' returns [ '"A23187, Antibiotic"', '"Antibiotic A23187"' ]
+  * Example: 'T000003' returns [ 'A23187, Antibiotic', 'Antibiotic A23187' ]
   */
   getTermsByTermUI: function* (term_ui) {
 
@@ -210,7 +212,7 @@ var meshTreeFuncs = {
         }, {});
 
         result.forEach(function (item) {
-          allLabels.push(item['label']);
+          allLabels.push(item['label'].replace(/\"/g, ''));
         });
 
       }
@@ -227,7 +229,7 @@ var meshTreeFuncs = {
   * Returns all terms by descriptor record unique identifier 
   * (i.e., all terms for all concepts, both preferred and not)
   * 
-  * Example: 'D000001' returns [ '"A23187, Antibiotic"', '"Antibiotic A23187"', '"A23187"', '"A 23187"', '"A-23187"', '"Calcimycin"' ]
+  * Example: 'D000001' returns [ 'A23187, Antibiotic', 'Antibiotic A23187', 'A23187', 'A 23187', 'A-23187', 'Calcimycin' ]
   */
   getAllTermsByDescUI: function* (desc_ui) {
 
@@ -241,7 +243,7 @@ var meshTreeFuncs = {
         for (let term_ui of termUIs) {
           let labels = yield this.getTermsByTermUI(term_ui);
           labels.forEach(function (label) {
-            allTerms.push(label);
+            allTerms.push(label.replace(/\"/g, ''));
           })
         }
       }
@@ -258,7 +260,7 @@ var meshTreeFuncs = {
   * Returns scope note for descriptor record unique identifier
   * (scope notes are contained in the preferred concept record)
   * 
-  * Example: 'D000001', via concept 'M0000001', returns "An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems."
+  * Example: 'D000001', via concept 'M0000001', returns 'An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems.'
   */
   getScopeNoteByDescUI: function* (desc_ui) {
 
@@ -275,7 +277,7 @@ var meshTreeFuncs = {
       if (_.isEmpty(result)) {
         return '';
       } else {
-        return result[0]['scopeNote'];
+        return result[0]['scopeNote'].replace(/\"/g, '');
       }
 
     } catch (err) {
@@ -321,6 +323,56 @@ var meshTreeFuncs = {
     }
 
   },
+
+  /*
+  * Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
+  * 
+  * `level`:
+  *   `0` - abstract only
+  *   `1` - all text
+  */
+  getWikipediaEntryByDescUI: function* (desc_ui, level) {
+
+    try {
+
+      let concept = yield this.getRecordPreferredTermByDescUI(desc_ui);
+      let wiki = yield wikipedia.getMainSections(concept.replace(/ /g, '+'));
+
+      if (level === 0) {
+        
+        let text = '';
+        _.each(wiki, function (section) {
+          if (section.sectionLevel === 0) {
+            text += section.sectionText;
+          }
+        });
+
+        // if no abstract, just return everything as if level = 1
+        if (text.length === 0) {
+          _.each(wiki, function (section) {
+            text += section.sectionText;
+          });
+        } 
+
+        return text;
+
+      } else {
+
+        let text = '';
+        _.each(wiki, function (section) {
+          text += section.sectionText;
+        });
+
+        return text;
+
+      }
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
+
+  },
+
 
 };
 

@@ -76,7 +76,7 @@ describe('get descriptor UI for tree number', function () {
 // getRecordPreferredTermByDescUI
 describe('get record preferred term by UI', function () {
   describe('D000001', function () {
-    var resultExpected = '"Calcimycin"';
+    var resultExpected = 'Calcimycin';
     it('should return: ' + resultExpected.toString(), function (done) {
       co(meshTreeFuncs.getRecordPreferredTermByDescUI('D000001')).then(function (result) {
         assert.strictEqual(result, resultExpected);
@@ -85,7 +85,7 @@ describe('get record preferred term by UI', function () {
     })
   })
   describe('D009369', function () {
-    var resultExpected = '"Neoplasms"';
+    var resultExpected = 'Neoplasms';
     it('should return: ' + resultExpected.toString(), function (done) {
       co(meshTreeFuncs.getRecordPreferredTermByDescUI('D009369')).then(function (result) {
         assert.strictEqual(result, resultExpected);
@@ -94,7 +94,7 @@ describe('get record preferred term by UI', function () {
     })
   })
   describe('D005138', function () {
-    var resultExpected = '"Eyebrows"';
+    var resultExpected = 'Eyebrows';
     it('should return: ' + resultExpected.toString(), function (done) {
       co(meshTreeFuncs.getRecordPreferredTermByDescUI('D005138')).then(function (result) {
         assert.strictEqual(result, resultExpected);
@@ -200,7 +200,7 @@ describe('get all term UIs contained by a concept UI', function () {
 // getTermsByTermUI
 describe('get all terms under a term UI', function () {
   describe('T000004', function () {
-    var resultExpected = ['"A23187"'];
+    var resultExpected = ['A23187'];
     it('should return correct terms: ' + resultExpected.toString(), function (done) {
       co(meshTreeFuncs.getTermsByTermUI('T000004')).then(function (result) {
         assert.deepEqual(result.sort(), resultExpected.sort());
@@ -209,7 +209,7 @@ describe('get all terms under a term UI', function () {
     })
   })
   describe('T365903', function () {
-    var resultExpected = ['"Microsomal Triglyceride Transfer Protein Deficiency Disease"'];
+    var resultExpected = ['Microsomal Triglyceride Transfer Protein Deficiency Disease'];
     it('should return correct terms: ' + resultExpected.toString(), function (done) {
       co(meshTreeFuncs.getTermsByTermUI('T365903')).then(function (result) {
         assert.deepEqual(result.sort(), resultExpected.sort());
@@ -218,7 +218,7 @@ describe('get all terms under a term UI', function () {
     })
   })
   describe('T814292', function () {
-    var resultExpected = ['"Cotyloid Cavities"', '"Cavity, Cotyloid"', '"Cavities, Cotyloid"', '"Cotyloid Cavity"'];
+    var resultExpected = ['Cotyloid Cavities', 'Cavity, Cotyloid', 'Cavities, Cotyloid', 'Cotyloid Cavity'];
     it('should return correct terms: ' + resultExpected.toString(), function (done) {
       co(meshTreeFuncs.getTermsByTermUI('T814292')).then(function (result) {
         assert.deepEqual(result.sort(), resultExpected.sort());
@@ -231,7 +231,7 @@ describe('get all terms under a term UI', function () {
 // getAllTermsByDescUI
 describe('get all terms by UI', function () {
   describe('D000001', function () {
-    var resultExpected = ['"A23187, Antibiotic"', '"Antibiotic A23187"', '"A23187"', '"A 23187"', '"A-23187"', '"Calcimycin"'];
+    var resultExpected = ['A23187, Antibiotic', 'Antibiotic A23187', 'A23187', 'A 23187', 'A-23187', 'Calcimycin'];
     it('should return all terms for concept Calcimycin: ' + resultExpected.toString(), function (done) {
       co(meshTreeFuncs.getAllTermsByDescUI('D000001')).then(function (result) {
         assert.deepEqual(result.sort(), resultExpected.sort());
@@ -240,7 +240,7 @@ describe('get all terms by UI', function () {
     })
   })
   describe('D009369', function () {
-    var resultExpected = ['"Cancers"', '"Cancer"', '"Benign Neoplasm"', '"Neoplasm, Benign"', '"Neoplasms, Benign"', '"Benign Neoplasms"', '"Tumor"', '"Tumors"', '"Neoplasia"', '"Neoplasm"', '"Neoplasms"'];
+    var resultExpected = ['Cancers', 'Cancer', 'Benign Neoplasm', 'Neoplasm, Benign', 'Neoplasms, Benign', 'Benign Neoplasms', 'Tumor', 'Tumors', 'Neoplasia', 'Neoplasm', 'Neoplasms'];
     it('should return all terms for concept Neoplasms: ' + resultExpected.toString(), function (done) {
       co(meshTreeFuncs.getAllTermsByDescUI('D009369')).then(function (result) {
         assert.deepEqual(result.sort(), resultExpected.sort());
@@ -249,7 +249,7 @@ describe('get all terms by UI', function () {
     })
   })
   describe('D005138', function () {
-    var resultExpected = ['"Eyebrow"', '"Eyebrows"'];
+    var resultExpected = ['Eyebrow', 'Eyebrows'];
     it('should return all terms for concept Eyebrows: ' + resultExpected.toString(), function (done) {
       co(meshTreeFuncs.getAllTermsByDescUI('D005138')).then(function (result) {
         assert.deepEqual(result.sort(), resultExpected.sort());
@@ -315,6 +315,64 @@ describe('get parent descriptor UIs for a descriptor UI', function () {
     it('should return two parent desc UIs: ' + resultExpected.toString(), function (done) {
       co(meshTreeFuncs.getParentDescUIsForDescUI('D005138')).then(function (result) {
         assert.deepEqual(result.sort(), resultExpected.sort());
+        done();
+      });
+    })
+  })
+});
+
+// getWikipediaEntryByDescUI
+describe('get scope note for descriptor UI', function () {
+  describe('D000001', function () {
+    it('should return the wikipedia abstract for concept Calcimycin', function (done) {
+      co(meshTreeFuncs.getWikipediaEntryByDescUI('D000001', 0)).then(function (result) {
+        console.log(result);
+        assert.equal(result.length>10, true);
+        done();
+      });
+    })
+  })
+  describe('D000001', function () {
+    it('should return the entire wikipedia text for concept Calcimycin', function (done) {
+      co(meshTreeFuncs.getWikipediaEntryByDescUI('D000001', 1)).then(function (result) {
+        console.log(result);
+        assert.equal(result.length>10, true);
+        done();
+      });
+    })
+  })
+  describe('D009369', function () {
+    it('should return the wikipedia abstract for concept Neoplasms', function (done) {
+      co(meshTreeFuncs.getWikipediaEntryByDescUI('D009369', 0)).then(function (result) {
+        console.log(result);
+        assert.equal(result.length>10, true);
+        done();
+      });
+    })
+  })
+  describe('D009369', function () {
+    it('should return the entire wikipedia text for concept Neoplasms', function (done) {
+      co(meshTreeFuncs.getWikipediaEntryByDescUI('D009369', 1)).then(function (result) {
+        console.log(result);
+        assert.equal(result.length>10, true);
+        done();
+      });
+    })
+  })
+  describe('D005138', function () {
+    it('should return the wikipedia abstract for concept Eyebrows', function (done) {
+      co(meshTreeFuncs.getWikipediaEntryByDescUI('D005138', 0)).then(function (result) {
+        console.log(result);
+        assert.equal(result.length>10, true);
+        done();
+      });
+    })
+  })
+  describe('D005138', function () {
+    it('should return the entire wikipedia text for concept Eyebrows', function (done) {
+      co(meshTreeFuncs.getWikipediaEntryByDescUI('D005138', 1)).then(function (result) {
+        console.log(result);
+        assert.equal(result.length>10, true);
         done();
       });
     })

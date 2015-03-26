@@ -103,19 +103,19 @@ Example: 'M0353609' returns [ 'T000003', 'T000004', 'T000001' ]
 
 Returns all terms contained by term UI (both preferred and not).
 
-Example: 'T000003' returns [ '"A23187, Antibiotic"', '"Antibiotic A23187"' ]
+Example: 'T000003' returns [ 'A23187, Antibiotic', 'Antibiotic A23187' ]
 
 ##### getAllTermsByDescUI (desc_ui)
 
 Returns all terms by descriptor record unique identifier (i.e., all terms for all concepts, both preferred and not).
 
-Example: 'D000001' returns [ '"A23187, Antibiotic"', '"Antibiotic A23187"', '"A23187"', '"A 23187"', '"A-23187"', '"Calcimycin"' ]
+Example: 'D000001' returns [ 'A23187, Antibiotic', 'Antibiotic A23187', 'A23187', 'A 23187', 'A-23187', 'Calcimycin' ]
 
 ##### getScopeNoteByDescUI (desc_ui)
 
 Returns scope note for descriptor record unique identifier (scope notes are contained in the preferred concept record).
 
-Example: 'D000001', via concept 'M0000001', returns "An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems."
+Example: 'D000001', via concept 'M0000001', returns 'An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems.'
 
 ##### getParentDescUIsForDescUI (desc_ui)
 
@@ -123,5 +123,19 @@ Returns parent descriptor records UIs (returns an array as records can exist in 
 
 Example: 'D000001' returns ['D001583']
 Example: 'D005138' returns ['D006197', 'D005123']
+
+##### getWikipediaEntryByDescUI (desc_ui)
+
+Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
+ 
+ `level`:
+
+    `0` - abstract only
+
+    `1` - all text
+
+One can extract either the abstract or entire body of text from wikipedia (cleaned, without link info, references, citations, etc.) for a particular concept, based on the preferred concept term. The function automatically follows any automatic redirects. For example, in MeSH the concept `Calcimycin` corresponds to the wikipedia page on `A23187`, which is an accepted term under the MeSH concept but not the preferred term.
+
+This is useful for providing additional relatively high quality and easily accessible context, for example in machine learning training.
 
 ...
