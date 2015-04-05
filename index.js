@@ -8,7 +8,8 @@ var levelgraph = require('levelgraph')
 
 var dbSearch = Bluebird.promisify(db.search);
 
-var wikipedia = require('./lib/wikipedia');
+var wikipedia = require('./lib/wikipedia')
+  , permutations = require('./lib/permutations');
 
 const mesh = 'http://id.nlm.nih.gov/mesh/'
   , meshv = 'http://id.nlm.nih.gov/mesh/vocab#'
@@ -356,6 +357,64 @@ var meshTreeFuncs = {
       }
 
       return childrenDescUIs;
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
+
+  },
+
+  /*
+  * Returns descriptor records UI of closest common ancestors of two or more descriptor record UIs
+  * (if a descriptor exists in more than one place on the tree, there will be more than one common ancestor)
+  * 
+  * Example: ['D000926', 'D012345'] returns ['D012343']
+  */
+  getCommonAncestorsForDescUIs: function* (desc_ui_arr) {
+
+    if (!_.isArray(desc_ui_arr)) raise('input not an array.');
+
+    try {
+
+      let commonAncestorsDescUIs = [];
+
+      let treeNums_arr = [];
+      for (let desc_ui of desc_ui_arr) {
+        let treeNums = yield this.getTreeNumbersByDescUI(desc_ui);
+        treeNums_arr.push(treeNums);
+      }
+
+      let treeNum_permutations = permutations.apply(null, treeNums_arr);
+
+      for (let permut of treeNum_permutations) {
+
+        let depth = 0;
+        let branches = [];
+        for (let branch of permut[0].split('.')) {
+
+          let isCommonBranch = _.all(
+            _.map(permut.slice(1, permut.length), function (x) { 
+              return branch === x.split('.')[depth]; 
+            })
+          );
+
+          if (isCommonBranch) {
+            branches.push(branch);
+            ++depth;
+          } else {
+            break;
+          }
+        }
+        let commonAncestorTreeNum = branches.join('.');
+
+        if (commonAncestorTreeNum) {
+          let commonAncestordescUI = yield this.getDescUIByTreeNumber(commonAncestorTreeNum);
+          commonAncestorsDescUIs.push(commonAncestordescUI);
+        }
+
+      }
+
+      return commonAncestorsDescUIs;
 
     } catch (err) {
       console.log('Error: ' + err);
