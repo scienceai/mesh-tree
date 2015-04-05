@@ -325,6 +325,45 @@ var meshTreeFuncs = {
   },
 
   /*
+  * Returns children descriptor records UIs
+  * (immediate, not descendants)
+  * 
+  * Example: 'D012343' returns ['D012345', 'D000926', 'D012346']
+  */
+  getChildrenDescUIsForDescUI: function* (desc_ui) {
+
+    try {
+
+      let childrenDescUIs = [];
+
+      let treeNums = yield this.getTreeNumbersByDescUI(desc_ui);
+
+      for (let treeNum of treeNums) {
+
+        let result = yield dbSearch({
+          subject: db.v('treeNum'),
+          predicate: meshv + 'broaderTransitive',
+          object: mesh + treeNum
+        }, {});
+
+        if (!_.isEmpty(result)) {
+          for (let res of result) {
+            let descUI = yield this.getDescUIByTreeNumber(res['treeNum'].replace(mesh, ''));
+            childrenDescUIs.push(descUI);
+          }
+        }
+
+      }
+
+      return childrenDescUIs;
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
+
+  },
+
+  /*
   * Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
   * 
   * `level`:
@@ -339,7 +378,7 @@ var meshTreeFuncs = {
       let wiki = yield wikipedia.getMainSections(concept.replace(/ /g, '+'));
 
       if (level === 0) {
-        
+
         let text = '';
         _.each(wiki, function (section) {
           if (section.sectionLevel === 0) {

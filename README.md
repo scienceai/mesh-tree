@@ -124,6 +124,12 @@ Returns parent descriptor records UIs (returns an array as records can exist in 
 Example: `'D000001'` returns `['D001583']`
 Example: `'D005138'` returns `['D006197', 'D005123']`
 
+##### getChildrenDescUIsForDescUI (desc_ui)
+
+Returns children descriptor records UIs (immediate, not descendants)
+
+Example: `'D012343'` returns `['D012345', 'D000926', 'D012346']`
+
 ##### getWikipediaEntryByDescUI (desc_ui)
 
 Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
