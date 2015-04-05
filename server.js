@@ -1,3 +1,7 @@
+'use strict';
+
+require("babel/register");
+
 var meshTreeFuncs = require('./index.js')
   , co = require('co')
   , zmq = require('zmq')

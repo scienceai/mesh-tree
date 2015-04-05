@@ -35,6 +35,7 @@
     "mocha": "^2.2.1"
   },
   "dependencies": {
+    "babel": "^5.0.8",
     "bluebird": "^2.9.14",
     "cheerio": "^0.18.0",
     "co": "^4.5.1",
@@ -50,6 +51,6 @@
     "progress-stream": "^1.0.1",
     "request": "^2.54.0",
     "xml-stream": "^0.4.5",
-    "zmq": "^2.10.0"
+    "zmq": "^2.11.0"
   }
 }
