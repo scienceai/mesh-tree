@@ -130,6 +130,12 @@ Returns children descriptor records UIs (immediate, not descendants)
 
 Example: `'D012343'` returns `['D012345', 'D000926', 'D012346']`
 
+##### getCommonAncestorsForDescUIs (desc_ui_arr)
+
+Returns descriptor records UI of closest common ancestors of two or more descriptor record UIs (if a descriptor exists in more than one place on the tree, there will be more than one common ancestor).
+
+Example: `['D000926', 'D012345']` returns `['D012343']`
+
 ##### getWikipediaEntryByDescUI (desc_ui)
 
 Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
