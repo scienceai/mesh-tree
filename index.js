@@ -367,6 +367,7 @@ var meshTreeFuncs = {
     try {
 
       let commonAncestorsDescUIs = [];
+      let commonAncestorsTreeNums = [];
 
       let treeNums_arr = [];
       for (let desc_ui of desc_ui_arr) {
@@ -395,9 +396,30 @@ var meshTreeFuncs = {
         }
         let commonAncestorTreeNum = branches.join('.');
 
-        if (commonAncestorTreeNum) {
-          let commonAncestordescUI = yield this.getDescUIByTreeNumber(commonAncestorTreeNum);
-          commonAncestorsDescUIs.push(commonAncestordescUI);
+        // should not be ancestor of common ancestor already in common ancestors array
+        let isBroader = _.any(
+          _.map(commonAncestorsTreeNums, t => _.startsWith(t, commonAncestorTreeNum))
+        );
+
+        if (commonAncestorTreeNum && !isBroader) {
+
+          // remove those in common ancestors array that are broader than current
+          let indices = [];
+          for (let idx = 0; idx < commonAncestorsTreeNums.length; idx++) {
+            if (_.startsWith(commonAncestorTreeNum, commonAncestorsTreeNums[idx])) {
+              indices.push(idx);
+            }
+          }
+          for (let idx of indices) {
+            commonAncestorsDescUIs.splice(idx, 1);
+            commonAncestorsTreeNums.splice(idx, 1);
+          }
+
+          // add common ancestor to array
+          let commonAncestorDescUI = yield this.getDescUIByTreeNumber(commonAncestorTreeNum);
+          commonAncestorsDescUIs.push(commonAncestorDescUI);
+          commonAncestorsTreeNums.push(commonAncestorTreeNum);
+
         }
 
       }
