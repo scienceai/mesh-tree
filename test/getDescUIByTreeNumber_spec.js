@@ -1,6 +1,3 @@
-var assert = require('assert')
-  , meshTreeFuncs = require('../index.js')
-  , co = require('co');
 
 // getDescUIByTreeNumber
 describe('get descriptor UI for tree number', function () {

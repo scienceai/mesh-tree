@@ -1,6 +1,3 @@
-var assert = require('assert')
-  , meshTreeFuncs = require('../index.js')
-  , co = require('co');
 
 // getRecordPreferredTermByDescUI
 describe('get record preferred term by UI', function () {

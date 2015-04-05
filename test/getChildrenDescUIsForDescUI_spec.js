@@ -1,6 +1,3 @@
-var assert = require('assert')
-  , meshTreeFuncs = require('../index.js')
-  , co = require('co');
 
 // getChildrenDescUIsForDescUI
 describe('get children descriptor UIs for a descriptor UI', function () {
