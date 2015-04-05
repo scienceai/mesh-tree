@@ -33,9 +33,7 @@ var meshTreeFuncs = {
         object: db.v('treeNumber')
       }, {});
 
-      let treeNumbers = _.map(result, function (item) {
-        return item['treeNumber'].replace(mesh, '');
-      });
+      let treeNumbers = _.map(result, item => item['treeNumber'].replace(mesh, ''));
       return treeNumbers;
 
     } catch (err) {
@@ -144,9 +142,7 @@ var meshTreeFuncs = {
           object: db.v('conceptUI')
         }, {});
 
-        result.forEach(function (item) {
-          allConceptUIs.push(item['conceptUI'].replace(mesh, ''));
-        });
+        result.forEach(item => allConceptUIs.push(item['conceptUI'].replace(mesh, '')));
 
       }
 
@@ -178,9 +174,7 @@ var meshTreeFuncs = {
           object: db.v('termUI')
         }, {});
 
-        result.forEach(function (item) {
-          allTermUIs.push(item['termUI'].replace(mesh, ''));
-        });
+        result.forEach(item => allTermUIs.push(item['termUI'].replace(mesh, '')));
 
       }
 
@@ -212,9 +206,7 @@ var meshTreeFuncs = {
           object: db.v('label')
         }, {});
 
-        result.forEach(function (item) {
-          allLabels.push(item['label'].replace(/\"/g, ''));
-        });
+        result.forEach(item => allLabels.push(item['label'].replace(/\"/g, '')));
 
       }
 
@@ -243,9 +235,7 @@ var meshTreeFuncs = {
         let termUIs = yield this.getTermUIsByConceptUI(concept_ui);
         for (let term_ui of termUIs) {
           let labels = yield this.getTermsByTermUI(term_ui);
-          labels.forEach(function (label) {
-            allTerms.push(label.replace(/\"/g, ''));
-          })
+          labels.forEach(label => allTerms.push(label.replace(/\"/g, '')));
         }
       }
 
@@ -393,9 +383,7 @@ var meshTreeFuncs = {
         for (let branch of permut[0].split('.')) {
 
           let isCommonBranch = _.all(
-            _.map(permut.slice(1, permut.length), function (x) { 
-              return branch === x.split('.')[depth]; 
-            })
+            _.map(permut.slice(1, permut.length), x => (branch === x.split('.')[depth]))
           );
 
           if (isCommonBranch) {
@@ -439,7 +427,7 @@ var meshTreeFuncs = {
       if (level === 0) {
 
         let text = '';
-        _.each(wiki, function (section) {
+        _.each(wiki, section => {
           if (section.sectionLevel === 0) {
             text += section.sectionText;
           }
@@ -447,7 +435,7 @@ var meshTreeFuncs = {
 
         // if no abstract, just return everything as if level = 1
         if (text.length === 0) {
-          _.each(wiki, function (section) {
+          _.each(wiki, section => {
             text += section.sectionText;
           });
         } 
@@ -457,7 +445,7 @@ var meshTreeFuncs = {
       } else {
 
         let text = '';
-        _.each(wiki, function (section) {
+        _.each(wiki, section => {
           text += section.sectionText;
         });
 
