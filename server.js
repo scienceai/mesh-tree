@@ -27,21 +27,23 @@ responder.on('message', function (bufReq) {
   console.log(prettyjson.render(reqMsg));
   co((meshTreeFuncs[reqMsg.taskname])(reqMsg.payload)).then(function (result) {
 
-    respObj = {
+    let respObj = {
       error: false,
       result: result,
       job_id: reqMsg.job_id,
       elapsed_secs: (new Date().getTime() - starttime) / 1000
     };
 
-    responder.send(new Buffer(JSON.stringify(respObj), 'utf8'));
-    console.log('Completed job ' + reqMsg.job_id);
-    console.log('...Result: ');
-    console.log(prettyjson.render(respObj));
+    setTimeout(function () {
+      responder.send(new Buffer(JSON.stringify(respObj), 'utf8'));
+      console.log('Completed job ' + reqMsg.job_id);
+      console.log('...Result: ');
+      console.log(prettyjson.render(respObj));
+    }, 100);
 
   }, function (err) {
 
-    respObj = {
+    let respObj = {
       error: true,
       result: 'ERROR: ' + err,
       job_id: reqMsg.job_id,
