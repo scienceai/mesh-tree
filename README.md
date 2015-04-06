@@ -63,6 +63,26 @@ def mesh_tree_rpc(taskname, *args):
 
 #### API
 
+##### getAllDescUIs ()
+
+Returns array of all descriptor record UIs
+
+##### getAllChemUIs ()
+
+Returns array of all chemical supplementary record UIs
+
+##### getWikipediaEntryByDescUI (desc_ui)
+
+Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
+ 
+`level`:
+- `0` - abstract only
+- `1` - all text
+
+One can extract either the abstract or entire body of text from wikipedia (cleaned, without link info, references, citations, etc.) for a particular concept, based on the preferred concept term. The function automatically follows any automatic redirects. For example, in MeSH the concept `Calcimycin` corresponds to the wikipedia page on `A23187`, which is an accepted term under the MeSH concept but not the preferred term.
+
+This is useful for providing additional relatively high quality and easily accessible context, for example in machine learning training.
+
 ##### getTreeNumbersByDescUI (desc_ui)
 
 Returns array of tree numbers by descriptor record unique identifier.
@@ -146,18 +166,3 @@ Example: `D000233 (Adenoidectomy), D014068 (Tonsillectomy), D007828 (Laryngoscop
 
 Example: `D011434 (Proprioception), D014785 (Vision, Ocular), D004856 (Postural Balance)` returns `D012677 (Sensation)`
 
-##### getWikipediaEntryByDescUI (desc_ui)
-
-Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
- 
-`level`:
-- `0` - abstract only
-- `1` - all text
-
-One can extract either the abstract or entire body of text from wikipedia (cleaned, without link info, references, citations, etc.) for a particular concept, based on the preferred concept term. The function automatically follows any automatic redirects. For example, in MeSH the concept `Calcimycin` corresponds to the wikipedia page on `A23187`, which is an accepted term under the MeSH concept but not the preferred term.
-
-This is useful for providing additional relatively high quality and easily accessible context, for example in machine learning training.
-
-##### getAllDescUIs ()
-
-Returns array of all descriptor record UIs

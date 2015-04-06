@@ -19,6 +19,99 @@ const mesh = 'http://id.nlm.nih.gov/mesh/'
 var meshTreeFuncs = {
 
   /*
+  * Returns array of all descriptor record UIs
+  */
+  getAllDescUIs: function* () {
+
+    try {
+
+      let result = yield dbSearch({
+        subject: db.v('desc'),
+        predicate: rdf + 'type',
+        object: meshv + 'TopicalDescriptor'
+      }, {});
+
+      let allDescUIs = _.map(result, (item) => item['desc'].replace(mesh, ''));
+      return allDescUIs; 
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
+
+  },
+
+  /*
+  * Returns array of all chemical supplementary record UIs
+  */
+  getAllChemUIs: function* () {
+
+    try {
+
+      let result = yield dbSearch({
+        subject: db.v('chem'),
+        predicate: rdf + 'type',
+        object: meshv + 'SCR_Chemical'
+      }, {});
+
+      let allChemUIs = _.map(result, (item) => item['chem'].replace(mesh, ''));
+      return allChemUIs; 
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
+
+  },
+
+  /*
+  * Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
+  * 
+  * `level`:
+  *   `0` - abstract only
+  *   `1` - all text
+  */
+  getWikipediaEntryByDescUI: function* (desc_ui, level) {
+
+    try {
+
+      let concept = yield this.getRecordPreferredTermByDescUI(desc_ui);
+      let wiki = yield wikipedia.getMainSections(concept.replace(/ /g, '+'));
+
+      if (level === 0) {
+
+        let text = '';
+        _.each(wiki, (section) => {
+          if (section.sectionLevel === 0) {
+            text += section.sectionText;
+          }
+        });
+
+        // if no abstract, just return everything as if level = 1
+        if (text.length === 0) {
+          _.each(wiki, (section) => {
+            text += section.sectionText;
+          });
+        } 
+
+        return text;
+
+      } else {
+
+        let text = '';
+        _.each(wiki, (section) => {
+          text += section.sectionText;
+        });
+
+        return text;
+
+      }
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
+
+  },
+
+  /*
   * Returns array of tree numbers by descriptor record unique identifier
   * 
   * Example: 'D000001' returns ['D03.438.221.173']
@@ -456,77 +549,6 @@ var meshTreeFuncs = {
       }
 
       return commonAncestorsDescUIs;
-
-    } catch (err) {
-      console.log('Error: ' + err);
-    }
-
-  },
-
-  /*
-  * Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
-  * 
-  * `level`:
-  *   `0` - abstract only
-  *   `1` - all text
-  */
-  getWikipediaEntryByDescUI: function* (desc_ui, level) {
-
-    try {
-
-      let concept = yield this.getRecordPreferredTermByDescUI(desc_ui);
-      let wiki = yield wikipedia.getMainSections(concept.replace(/ /g, '+'));
-
-      if (level === 0) {
-
-        let text = '';
-        _.each(wiki, (section) => {
-          if (section.sectionLevel === 0) {
-            text += section.sectionText;
-          }
-        });
-
-        // if no abstract, just return everything as if level = 1
-        if (text.length === 0) {
-          _.each(wiki, (section) => {
-            text += section.sectionText;
-          });
-        } 
-
-        return text;
-
-      } else {
-
-        let text = '';
-        _.each(wiki, (section) => {
-          text += section.sectionText;
-        });
-
-        return text;
-
-      }
-
-    } catch (err) {
-      console.log('Error: ' + err);
-    }
-
-  },
-
-  /*
-  * Returns array of all descriptor record UIs
-  */
-  getAllDescUIs: function* () {
-
-    try {
-
-      let result = yield dbSearch({
-        subject: db.v('desc'),
-        predicate: rdf + 'type',
-        object: meshv + 'TopicalDescriptor'
-      }, {});
-
-      let allDescUIs = _.map(result, (item) => item['desc'].replace(mesh, ''));
-      return allDescUIs; 
 
     } catch (err) {
       console.log('Error: ' + err);
