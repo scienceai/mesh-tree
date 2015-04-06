@@ -111,25 +111,29 @@ Example: `'D000001'` returns `'M0000001'`
 
 Returns all concept UIs contained by descriptor record UI (both preferred and not).
 
-Example: `'D000001'` returns `[ 'M0353609', 'M0000001' ]`
+Example: `'D000001'` returns `['M0353609', 'M0000001']`
   
 ##### getTermUIsByConceptUI (concept_ui)
 
 Returns all term UIs contained by concept UI (both preferred and not).
 
-Example: `'M0353609'` returns `[ 'T000003', 'T000004', 'T000001' ]`
+Example: `'M0353609'` returns `['T000003', 'T000004', 'T000001']`
 
 ##### getTermsByTermUI (term_ui)
 
 Returns all terms contained by term UI (both preferred and not).
 
-Example: `'T000003'` returns `[ 'A23187, Antibiotic', 'Antibiotic A23187' ]`
+Example: `'T000003'` returns `['A23187, Antibiotic', 'Antibiotic A23187']`
 
 ##### getAllTermsByDescUI (desc_ui)
 
 Returns all terms by descriptor record unique identifier (i.e., all terms for all concepts, both preferred and not).
 
-Example: `'D000001'` returns `[ 'A23187, Antibiotic', 'Antibiotic A23187', 'A23187', 'A 23187', 'A-23187', 'Calcimycin' ]`
+Example: `'D000001'` returns `['A23187, Antibiotic', 'Antibiotic A23187', 'A23187', 'A 23187', 'A-23187', 'Calcimycin']`
+
+Can also use chemical supplementary concept records UIs here as well:
+
+Example: `'D000001'` returns `['CH-A1-MG', 'alpha 1 microglobulin, chorionic', 'chorionic alpha 1-microglobulin', 'chorionic alpha(1)-microglobulin']`
 
 ##### getScopeNoteByDescUI (desc_ui)
 
@@ -142,7 +146,7 @@ Example: `'D000001'`, via concept `'M0000001'`, returns `'An ionophorous, polyet
 Returns parent descriptor records UIs (returns an array as records can exist in multiple tree branches).
 
 Example: `'D000001'` returns `['D001583']`
-Example: `'D005138'` returns `['D006197', 'D005123']`
+Example: `'C025734'` returns `['D006197', 'D005123']`
 
 ##### getChildrenDescUIsForDescUI (desc_ui)
 
