@@ -158,4 +158,6 @@ One can extract either the abstract or entire body of text from wikipedia (clean
 
 This is useful for providing additional relatively high quality and easily accessible context, for example in machine learning training.
 
-...
+##### getAllDescUIs ()
+
+Returns array of all descriptor record UIs
