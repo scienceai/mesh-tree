@@ -130,11 +130,21 @@ Returns children descriptor records UIs (immediate, not descendants)
 
 Example: `'D012343'` returns `['D012345', 'D000926', 'D012346']`
 
+##### getSiblingDescUIsForDescUI (desc_ui)
+
+Returns sibling descriptor records UIs (across all branches a descriptor record may exist under).
+
+Example: `D015834 (Cochlear Diseases)` returns `D018159 (Endolymphatic Hydrops), D015837 (Vestibular Diseases), D007762 (Labyrinthitis)`
+
 ##### getCommonAncestorsForDescUIs (desc_ui_arr)
 
 Returns descriptor records UI of closest common ancestors of two or more descriptor record UIs (if a descriptor exists in more than one place on the tree, there will be more than one common ancestor).
 
-Example: `['D000926', 'D012345']` returns `['D012343']`
+Example: `D012345 (RNA, Transfer, Amino Acid-Specific), D000926 (Anticodon)` returns `D012343 (RNA, Transfer)`
+
+Example: `D000233 (Adenoidectomy), D014068 (Tonsillectomy), D007828 (Laryngoscopy)` returns `D013517 (Otorhinolaryngologic Surgical Procedures)`
+
+Example: `D011434 (Proprioception), D014785 (Vision, Ocular), D004856 (Postural Balance)` returns `D012677 (Sensation)`
 
 ##### getWikipediaEntryByDescUI (desc_ui)
 

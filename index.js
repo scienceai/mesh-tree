@@ -355,6 +355,37 @@ var meshTreeFuncs = {
   },
 
   /*
+  * Returns sibling descriptor records UIs
+  * (across all branches a descriptor record may exist under)
+  * 
+  * Example: 'D015834' returns ['D012345', 'D000926', 'D012346']
+  */
+  getSiblingDescUIsForDescUI: function* (desc_ui) {
+
+    try {
+
+      let siblingDescUIs = [];
+
+      let parentDescUIs = yield this.getParentDescUIsForDescUI(desc_ui);
+
+      for (let parent of parentDescUIs) {
+
+        let childrenDescUIs = yield this.getChildrenDescUIsForDescUI(parent);
+        _.forEach(childrenDescUIs, ui => siblingDescUIs.push(ui));
+
+      }
+
+      _.remove(siblingDescUIs, ui => (ui === desc_ui));
+
+      return siblingDescUIs;
+
+    } catch (err) {
+      console.log('Error: ' + err);
+    }
+
+  },
+
+  /*
   * Returns descriptor records UI of closest common ancestors of two or more descriptor record UIs
   * (if a descriptor exists in more than one place on the tree, there will be more than one common ancestor)
   * 
