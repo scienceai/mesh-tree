@@ -1,6 +1,6 @@
 {
   "name": "mesh-tree",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Utility functions for traversing the Medical Subject Heading (MeSH) tree",
   "main": "index.js",
   "scripts": {
