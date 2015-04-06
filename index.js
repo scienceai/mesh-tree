@@ -69,7 +69,9 @@ var meshTreeFuncs = {
   *   `0` - abstract only
   *   `1` - all text
   */
-  getWikipediaEntryByDescUI: function* (desc_ui, level) {
+  getWikipediaEntryByDescUI: function* (args) {
+
+    let [desc_ui, level] = args;
 
     try {
 
