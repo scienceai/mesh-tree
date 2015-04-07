@@ -6,7 +6,9 @@
   "scripts": {
     "test": "node_modules/.bin/mocha --reporter spec --compilers js:babel/register",
     "initdb": "node ./util/initdb.js",
-    "server": "node server.js"
+    "server": "node server.js",
+    "coverage": "rm -rf coverage; babel-node -r node_modules/.bin/isparta cover _mocha --report lcovonly -- --reporter spec --compilers js:babel/register --bail",
+    "publish-coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "repository": {
     "type": "git",
@@ -32,6 +34,8 @@
   "devDependencies": {
     "babel": "^5.0.8",
     "chai": "^2.2.0",
+    "coveralls": "^2.11.2",
+    "isparta": "^3.0.3",
     "mocha": "^2.2.1"
   },
   "dependencies": {

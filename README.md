@@ -74,7 +74,7 @@ Returns array of all descriptor record UIs
 
 Returns array of all chemical supplementary record UIs
 
-##### getWikipediaEntryByDescUI (desc_ui)
+##### getWikipediaEntryByDescUI ([desc_ui, level])
 
 Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
  
