@@ -1,7 +1,10 @@
-mesh-tree
-========
+# mesh-tree
+
+[![Dependency Status](https://david-dm.org/standard-analytics/mesh-tree.svg)](https://david-dm.org/standard-analytics/mesh-tree)
+[![devDependency Status](https://david-dm.org/standard-analytics/mesh-tree/dev-status.svg)](https://david-dm.org/standard-analytics/mesh-tree#info=devDependencies)
 
 Utility functions for traversing the Medical Subject Heading (MeSH) ontology tree
+___
 
 ## Setup
 
@@ -63,11 +66,11 @@ def mesh_tree_rpc(taskname, *args):
 
 #### API
 
-##### getAllDescUIs ()
+##### getAllDescUIs
 
 Returns array of all descriptor record UIs
 
-##### getAllChemUIs ()
+##### getAllChemUIs
 
 Returns array of all chemical supplementary record UIs
 
