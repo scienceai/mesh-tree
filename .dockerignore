@@ -1,0 +1,4 @@
+.git
+coverage/
+db/
+node_modules/
