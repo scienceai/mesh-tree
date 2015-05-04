@@ -54,8 +54,6 @@
     "lodash": "^3.5.0",
     "prettyjson": "^1.1.0",
     "progress-stream": "^1.0.1",
-    "request": "^2.54.0",
-    "xml-stream": "^0.4.5",
-    "zmq": "^2.11.0"
+    "request": "^2.54.0"
   }
 }

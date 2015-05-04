@@ -3,6 +3,7 @@ node_js:
   - "0.12"
   - "iojs"
 before_script:
+  - npm install -g babel
   - npm run initdb-test
 script:
   - npm run coverage
