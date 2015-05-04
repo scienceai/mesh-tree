@@ -8,9 +8,9 @@
     "test": "MESH_TREE_TESTDB=dbtest node_modules/.bin/mocha --reporter spec --compilers js:babel/register",
     "initdb": "node_modules/levelgraph-n3/import.js $PATH_TO_MESH_RDF -o ./db",
     "initdb-quiet": "node_modules/levelgraph-n3/import.js --quiet $PATH_TO_MESH_RDF -o ./db",
-    "server": "node server.js",
-    "coverage": "rm -rf coverage; node_modules/.bin/babel-node -r node_modules/.bin/isparta cover _mocha --report lcovonly -- --reporter spec --compilers js:babel/register --bail",
-    "publish-coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "coverage": "rm -rf coverage; MESH_TREE_TESTDB=dbtest node_modules/.bin/babel-node -r node_modules/.bin/isparta cover _mocha --report lcovonly -- --reporter spec --compilers js:babel/register --bail",
+    "publish-coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "server": "node server.js"
   },
   "repository": {
     "type": "git",
@@ -47,7 +47,6 @@
     "co": "^4.5.1",
     "expand-home-dir": "0.0.2",
     "jsonld": "^0.3.22",
-    "leveldown": "^0.10.4",
     "levelgraph": "^0.10.2",
     "levelgraph-jsonld": "^0.4.0",
     "levelgraph-n3": "^0.5.0",

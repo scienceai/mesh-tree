@@ -77,7 +77,7 @@ Returns array of all chemical supplementary record UIs
 ##### getWikipediaEntryByDescUI ([desc_ui, level])
 
 Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
- 
+
 `level`:
 - `0` - abstract only
 - `1` - all text
@@ -103,7 +103,7 @@ Example: `'D03.438.221.173'` returns `'D000001'`
 Returns the record preferred term by descriptor record unique identifier (i.e., the preferred term of the preferred concept).
 
 Example: `'D000001'` returns `'Calcimycin'`
-  
+
 ##### getPreferredConceptByDescUI (desc_ui)
 
 Returns preferred concept UI for descriptor record UI.
@@ -115,7 +115,7 @@ Example: `'D000001'` returns `'M0000001'`
 Returns all concept UIs contained by descriptor record UI (both preferred and not).
 
 Example: `'D000001'` returns `['M0353609', 'M0000001']`
-  
+
 ##### getTermUIsByConceptUI (concept_ui)
 
 Returns all term UIs contained by concept UI (both preferred and not).
@@ -172,4 +172,3 @@ Example: `D012345 (RNA, Transfer, Amino Acid-Specific), D000926 (Anticodon)` ret
 Example: `D000233 (Adenoidectomy), D014068 (Tonsillectomy), D007828 (Laryngoscopy)` returns `D013517 (Otorhinolaryngologic Surgical Procedures)`
 
 Example: `D011434 (Proprioception), D014785 (Vision, Ocular), D004856 (Postural Balance)` returns `D012677 (Sensation)`
-

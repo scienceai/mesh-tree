@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - "0.12"
+  - "iojs"
+before_script:
+  - npm run initdb-test
+script:
+  - npm run coverage
+  - npm run publish-coverage
+notifications:
+  slack: standardanalytics:vPQA8IowAphWwzDgGtHkdkRk
