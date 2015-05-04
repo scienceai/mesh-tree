@@ -4,7 +4,8 @@
   "description": "Utility functions for traversing the Medical Subject Heading (MeSH) tree",
   "main": "index.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha --reporter spec --compilers js:babel/register",
+    "initdb-test": "tar -xzf test/fixtures/mesh_subset.nt.tar.gz -C test/fixtures; node_modules/levelgraph-n3/import.js test/fixtures/mesh_subset.nt -o ./dbtest; rm test/fixtures/mesh_subset.nt",
+    "test": "MESH_TREE_TESTDB=dbtest node_modules/.bin/mocha --reporter spec --compilers js:babel/register",
     "initdb": "node_modules/levelgraph-n3/import.js $PATH_TO_MESH_RDF -o ./db",
     "initdb-quiet": "node_modules/levelgraph-n3/import.js --quiet $PATH_TO_MESH_RDF -o ./db",
     "server": "node server.js",

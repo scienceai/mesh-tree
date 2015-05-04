@@ -30,3 +30,5 @@ node_modules
 # Extra large files
 data/
 db/
+dbtest/
+test/fixtures/mesh_subset.nt

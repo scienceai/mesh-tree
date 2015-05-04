@@ -2,10 +2,15 @@
 
 var levelgraph = require('levelgraph')
   , levelgraphN3 = require('levelgraph-n3')
-  , db = levelgraphN3(levelgraph('./db'))
   , _ = require('lodash')
   , Bluebird = require('bluebird');
 
+var db;
+if (process.env['MESH_TREE_TESTDB']) {
+  db = levelgraphN3(levelgraph(process.env['MESH_TREE_TESTDB']));
+} else {
+  db = levelgraphN3(levelgraph('db'));
+}
 var dbSearch = Bluebird.promisify(db.search);
 
 var wikipedia = require('./lib/wikipedia')
@@ -125,6 +130,7 @@ var meshTreeFuncs = {
       predicate: MESHV + 'treeNumber',
       object: MESH + tree_num
     }, {});
+
     if (_.isEmpty(result)) throw('empty result.');
 
     return result[0]['descUI'].replace(MESH, '');
@@ -144,6 +150,7 @@ var meshTreeFuncs = {
       predicate: MESHV + 'recordPreferredTerm',
       object: db.v('recordPreferredTermUI')
     }, {});
+
     if (_.isEmpty(result1)) throw('empty result.');
 
     let result2 = yield dbSearch({
@@ -151,6 +158,7 @@ var meshTreeFuncs = {
       predicate: MESHV + 'prefLabel',
       object: db.v('term')
     }, {});
+
     if (_.isEmpty(result2)) throw('empty result.');
 
     return result2[0]['term'].replace(/\"/g, '');
@@ -169,6 +177,7 @@ var meshTreeFuncs = {
       predicate: MESHV + 'preferredConcept',
       object: db.v('conceptUI')
     }, {});
+
     if (_.isEmpty(result)) throw('empty result.');
 
     return result[0]['conceptUI'].replace(MESH, '');
