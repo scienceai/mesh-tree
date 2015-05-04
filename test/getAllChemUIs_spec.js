@@ -5,10 +5,9 @@ describe('get array of all chemical supplement record UIs', function () {
   var allChemUIs;
 
   before(function (done) {
-    this.timeout(5000);
+    this.timeout(15000);
     co(meshTreeFuncs.getAllChemUIs()).then(function (result) {
       allChemUIs = result;
-      console.log(result.length);
       done();
     });
   });
@@ -22,5 +21,5 @@ describe('get array of all chemical supplement record UIs', function () {
   it('should include C025735', function () {
     expect(allChemUIs).to.include('C025735');
   })
-  
+
 });

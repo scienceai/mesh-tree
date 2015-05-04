@@ -5,6 +5,7 @@ describe('get array of all descriptor UIs', function () {
   var allDescUIs;
 
   before(function (done) {
+    this.timeout(15000);
     co(meshTreeFuncs.getAllDescUIs()).then(function (result) {
       allDescUIs = result;
       done();
@@ -26,5 +27,5 @@ describe('get array of all descriptor UIs', function () {
   it('should include D005138', function () {
     expect(allDescUIs).to.include('D005138');
   })
-  
+
 });

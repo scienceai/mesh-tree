@@ -1,5 +1,7 @@
 # mesh-tree
 
+[![Build Status](https://travis-ci.org/standard-analytics/mesh-tree.svg)](https://travis-ci.org/standard-analytics/mesh-tree)
+[![Coverage Status](https://coveralls.io/repos/standard-analytics/mesh-tree/badge.svg?branch=master)](https://coveralls.io/r/standard-analytics/mesh-tree?branch=master)
 [![Dependency Status](https://david-dm.org/standard-analytics/mesh-tree.svg)](https://david-dm.org/standard-analytics/mesh-tree)
 [![devDependency Status](https://david-dm.org/standard-analytics/mesh-tree/dev-status.svg)](https://david-dm.org/standard-analytics/mesh-tree#info=devDependencies)
 
@@ -7,6 +9,8 @@ Utility functions for traversing the Medical Subject Heading (MeSH) ontology tre
 ___
 
 ## Setup
+
+To use with the full MeSH data:
 
 #### 1. Fetch data
 
@@ -26,11 +30,11 @@ See [HHS/meshrdf](https://github.com/HHS/meshrdf) for instructions on transformi
 
 #### 4. Initialize DB
 
-We utilize LevelGraph (which is built on top of LevelDB) with the LevelGraph-N3 extension for storing and accessing the MeSH ontology as RDF N-triples. Run `npm run initdb` to stream the RDF data into the datastore.
+We utilize LevelGraph (which is built on top of LevelDB) with the LevelGraph-N3 extension for storing and accessing the MeSH ontology as RDF N-triples. Run `npm run initdb` to stream the RDF data into the datastore. `PATH_TO_MESH_RDF` must be set as an environment variable, and is the location of the N-triples file. The database will be created at `./db`.
 
 ## Tests
 
-`npm test` runs Mocha tests.
+Run `npm run initdb-test` to load fixture data and `npm test` to run mocha tests.
 
 ## Usage
 
@@ -64,17 +68,17 @@ def mesh_tree_rpc(taskname, *args):
     return result
 ```
 
-#### API
+## API
 
-##### getAllDescUIs
+### getAllDescUIs()
 
 Returns array of all descriptor record UIs
 
-##### getAllChemUIs
+### getAllChemUIs()
 
 Returns array of all chemical supplementary record UIs
 
-##### getWikipediaEntryByDescUI ([desc_ui, level])
+### getWikipediaEntryByDescUI([desc_ui, level])
 
 Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
 
@@ -86,49 +90,49 @@ One can extract either the abstract or entire body of text from wikipedia (clean
 
 This is useful for providing additional relatively high quality and easily accessible context, for example in machine learning training.
 
-##### getTreeNumbersByDescUI (desc_ui)
+### getTreeNumbersByDescUI(desc_ui)
 
 Returns array of tree numbers by descriptor record unique identifier.
 
 Example: `'D000001'` returns `['D03.438.221.173']`
 
-##### getDescUIByTreeNumber (tree_num)
+### getDescUIByTreeNumber(tree_num)
 
 Returns descriptor record unique identifier by tree number.
 
 Example: `'D03.438.221.173'` returns `'D000001'`
 
-##### getRecordPreferredTermByDescUI (desc_ui)
+### getRecordPreferredTermByDescUI(desc_ui)
 
 Returns the record preferred term by descriptor record unique identifier (i.e., the preferred term of the preferred concept).
 
 Example: `'D000001'` returns `'Calcimycin'`
 
-##### getPreferredConceptByDescUI (desc_ui)
+### getPreferredConceptByDescUI(desc_ui)
 
 Returns preferred concept UI for descriptor record UI.
 
 Example: `'D000001'` returns `'M0000001'`
 
-##### getConceptUIsByDescUI (desc_ui)
+### getConceptUIsByDescUI(desc_ui)
 
 Returns all concept UIs contained by descriptor record UI (both preferred and not).
 
 Example: `'D000001'` returns `['M0353609', 'M0000001']`
 
-##### getTermUIsByConceptUI (concept_ui)
+### getTermUIsByConceptUI(concept_ui)
 
 Returns all term UIs contained by concept UI (both preferred and not).
 
 Example: `'M0353609'` returns `['T000003', 'T000004', 'T000001']`
 
-##### getTermsByTermUI (term_ui)
+### getTermsByTermUI(term_ui)
 
 Returns all terms contained by term UI (both preferred and not).
 
 Example: `'T000003'` returns `['A23187, Antibiotic', 'Antibiotic A23187']`
 
-##### getAllTermsByDescUI (desc_ui)
+### getAllTermsByDescUI(desc_ui)
 
 Returns all terms by descriptor record unique identifier (i.e., all terms for all concepts, both preferred and not).
 
@@ -138,32 +142,32 @@ Can also use chemical supplementary concept records UIs here as well:
 
 Example: `'D000001'` returns `['CH-A1-MG', 'alpha 1 microglobulin, chorionic', 'chorionic alpha 1-microglobulin', 'chorionic alpha(1)-microglobulin']`
 
-##### getScopeNoteByDescUI (desc_ui)
+### getScopeNoteByDescUI(desc_ui)
 
 Returns scope note for descriptor record unique identifier (scope notes are contained in the preferred concept record).
 
 Example: `'D000001'`, via concept `'M0000001'`, returns `'An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems.'`
 
-##### getParentDescUIsForDescUI (desc_ui)
+### getParentDescUIsForDescUI(desc_ui)
 
 Returns parent descriptor records UIs (returns an array as records can exist in multiple tree branches).
 
 Example: `'D000001'` returns `['D001583']`
 Example: `'C025734'` returns `['D006197', 'D005123']`
 
-##### getChildrenDescUIsForDescUI (desc_ui)
+### getChildrenDescUIsForDescUI(desc_ui)
 
 Returns children descriptor records UIs (immediate, not descendants)
 
 Example: `'D012343'` returns `['D012345', 'D000926', 'D012346']`
 
-##### getSiblingDescUIsForDescUI (desc_ui)
+### getSiblingDescUIsForDescUI(desc_ui)
 
 Returns sibling descriptor records UIs (across all branches a descriptor record may exist under).
 
 Example: `D015834 (Cochlear Diseases)` returns `D018159 (Endolymphatic Hydrops), D015837 (Vestibular Diseases), D007762 (Labyrinthitis)`
 
-##### getCommonAncestorsForDescUIs (desc_ui_arr)
+### getCommonAncestorsForDescUIs(desc_ui_arr)
 
 Returns descriptor records UI of closest common ancestors of two or more descriptor record UIs (if a descriptor exists in more than one place on the tree, there will be more than one common ancestor).
 
