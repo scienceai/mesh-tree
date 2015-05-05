@@ -6,7 +6,7 @@ describe('get array of all chemical supplement record UIs', function () {
 
   before(function (done) {
     this.timeout(15000);
-    co(meshTreeFuncs.getAllChemUIs()).then(function (result) {
+    meshTree.getAllChemUIs().then(function (result) {
       allChemUIs = result;
       done();
     });

@@ -1,19 +1,20 @@
 'use strict';
 
-var levelgraph = require('levelgraph')
+let levelgraph = require('levelgraph')
   , levelgraphN3 = require('levelgraph-n3')
   , _ = require('lodash')
-  , Bluebird = require('bluebird');
+  , Bluebird = require('bluebird')
+  , co = require('co');
 
-var db;
+let db;
 if (process.env['MESH_TREE_TESTDB']) {
   db = levelgraphN3(levelgraph(process.env['MESH_TREE_TESTDB']));
 } else {
   db = levelgraphN3(levelgraph('db'));
 }
-var dbSearch = Bluebird.promisify(db.search);
+let dbSearch = Bluebird.promisify(db.search);
 
-var wikipedia = require('./lib/wikipedia')
+let wikipedia = require('./lib/wikipedia')
   , permutations = require('./lib/permutations');
 
 const MESH = 'http://id.nlm.nih.gov/mesh/';
@@ -21,12 +22,12 @@ const MESHV = 'http://id.nlm.nih.gov/mesh/vocab#';
 const RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
 const RDFS = 'http://www.w3.org/2000/01/rdf-schema#';
 
-var meshTreeFuncs = {
+let meshTree = {
 
   /*
   * Returns array of all descriptor record UIs
   */
-  getAllDescUIs: function* () {
+  getAllDescUIs: co.wrap(function* () {
 
     let result = yield dbSearch({
       subject: db.v('desc'),
@@ -37,12 +38,12 @@ var meshTreeFuncs = {
     let allDescUIs = _.map(result, (item) => item['desc'].replace(MESH, ''));
     return allDescUIs;
 
-  },
+  }),
 
   /*
   * Returns array of all chemical supplementary record UIs
   */
-  getAllChemUIs: function* () {
+  getAllChemUIs: co.wrap(function* () {
 
     let result = yield dbSearch({
       subject: db.v('chem'),
@@ -53,7 +54,7 @@ var meshTreeFuncs = {
     let allChemUIs = _.map(result, (item) => item['chem'].replace(MESH, ''));
     return allChemUIs;
 
-  },
+  }),
 
   /*
   * Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
@@ -62,7 +63,7 @@ var meshTreeFuncs = {
   *   `0` - abstract only
   *   `1` - all text
   */
-  getWikipediaEntryByDescUI: function* (args) {
+  getWikipediaEntryByDescUI: co.wrap(function* (args) {
 
     let [desc_ui, level] = args;
 
@@ -98,14 +99,14 @@ var meshTreeFuncs = {
 
     }
 
-  },
+  }),
 
   /*
   * Returns array of tree numbers by descriptor record unique identifier
   *
   * Example: 'D000001' returns ['D03.438.221.173']
   */
-  getTreeNumbersByDescUI: function* (desc_ui) {
+  getTreeNumbersByDescUI: co.wrap(function* (desc_ui) {
 
     let result = yield dbSearch({
       subject: MESH + desc_ui,
@@ -116,14 +117,14 @@ var meshTreeFuncs = {
     let treeNumbers = _.map(result, (item) => item['treeNumber'].replace(MESH, ''));
     return treeNumbers;
 
-  },
+  }),
 
   /*
   * Returns descriptor record unique identifier by tree number
   *
   * Example: 'D03.438.221.173' returns 'D000001'
   */
-  getDescUIByTreeNumber: function* (tree_num) {
+  getDescUIByTreeNumber: co.wrap(function* (tree_num) {
 
     let result = yield dbSearch({
       subject: db.v('descUI'),
@@ -135,7 +136,7 @@ var meshTreeFuncs = {
 
     return result[0]['descUI'].replace(MESH, '');
 
-  },
+  }),
 
   /*
   * Returns the record preferred term by descriptor record unique identifier
@@ -143,7 +144,7 @@ var meshTreeFuncs = {
   *
   * Example: 'D000001' returns 'Calcimycin'
   */
-  getRecordPreferredTermByDescUI: function* (desc_ui) {
+  getRecordPreferredTermByDescUI: co.wrap(function* (desc_ui) {
 
     let result1 = yield dbSearch({
       subject: MESH + desc_ui,
@@ -163,14 +164,14 @@ var meshTreeFuncs = {
 
     return result2[0]['term'].replace(/\"/g, '');
 
-  },
+  }),
 
   /*
   * Returns preferred concept UI for descriptor record UI
   *
   * Example: 'D000001' returns 'M0000001'
   */
-  getPreferredConceptByDescUI: function* (desc_ui) {
+  getPreferredConceptByDescUI: co.wrap(function* (desc_ui) {
 
     let result = yield dbSearch({
       subject: MESH + desc_ui,
@@ -182,7 +183,7 @@ var meshTreeFuncs = {
 
     return result[0]['conceptUI'].replace(MESH, '');
 
-  },
+  }),
 
   /*
   * Returns all concept UIs contained by descriptor record UI
@@ -190,7 +191,7 @@ var meshTreeFuncs = {
   *
   * Example: 'D000001' returns [ 'M0353609', 'M0000001' ]
   */
-  getConceptUIsByDescUI: function* (desc_ui) {
+  getConceptUIsByDescUI: co.wrap(function* (desc_ui) {
 
     let allConceptUIs = [];
 
@@ -208,7 +209,7 @@ var meshTreeFuncs = {
 
     return allConceptUIs;
 
-  },
+  }),
 
   /*
   * Returns all term UIs contained by concept UI
@@ -216,7 +217,7 @@ var meshTreeFuncs = {
   *
   * Example: 'M0353609' returns [ 'T000003', 'T000004', 'T000001' ]
   */
-  getTermUIsByConceptUI: function* (concept_ui) {
+  getTermUIsByConceptUI: co.wrap(function* (concept_ui) {
 
     let allTermUIs = [];
 
@@ -234,7 +235,7 @@ var meshTreeFuncs = {
 
     return allTermUIs;
 
-  },
+  }),
 
   /*
   * Returns all terms contained by term UI
@@ -242,7 +243,7 @@ var meshTreeFuncs = {
   *
   * Example: 'T000003' returns [ 'A23187, Antibiotic', 'Antibiotic A23187' ]
   */
-  getTermsByTermUI: function* (term_ui) {
+  getTermsByTermUI: co.wrap(function* (term_ui) {
 
     let allLabels = [];
 
@@ -260,7 +261,7 @@ var meshTreeFuncs = {
 
     return allLabels;
 
-  },
+  }),
 
   /*
   * Returns all terms by descriptor record unique identifier
@@ -268,7 +269,7 @@ var meshTreeFuncs = {
   *
   * Example: 'D000001' returns [ 'A23187, Antibiotic', 'Antibiotic A23187', 'A23187', 'A 23187', 'A-23187', 'Calcimycin' ]
   */
-  getAllTermsByDescUI: function* (desc_ui) {
+  getAllTermsByDescUI: co.wrap(function* (desc_ui) {
 
     let allTerms = [];
 
@@ -283,7 +284,7 @@ var meshTreeFuncs = {
 
     return allTerms;
 
-  },
+  }),
 
   /*
   * Returns scope note for descriptor record unique identifier
@@ -291,7 +292,7 @@ var meshTreeFuncs = {
   *
   * Example: 'D000001', via concept 'M0000001', returns 'An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems.'
   */
-  getScopeNoteByDescUI: function* (desc_ui) {
+  getScopeNoteByDescUI: co.wrap(function* (desc_ui) {
 
     let concept_ui = yield this.getPreferredConceptByDescUI(desc_ui);
 
@@ -307,7 +308,7 @@ var meshTreeFuncs = {
       return result[0]['scopeNote'].replace(/\"/g, '');
     }
 
-  },
+  }),
 
   /*
   * Returns parent descriptor records UIs
@@ -316,7 +317,7 @@ var meshTreeFuncs = {
   * Example: 'D000001' returns ['D001583']
   *          'D005138' returns ['D006197', 'D005123']
   */
-  getParentDescUIsForDescUI: function* (desc_ui) {
+  getParentDescUIsForDescUI: co.wrap(function* (desc_ui) {
 
     let parentDescUIs = [];
 
@@ -339,7 +340,7 @@ var meshTreeFuncs = {
 
     return parentDescUIs;
 
-  },
+  }),
 
   /*
   * Returns children descriptor records UIs
@@ -347,7 +348,7 @@ var meshTreeFuncs = {
   *
   * Example: 'D012343' returns ['D012345', 'D000926', 'D012346']
   */
-  getChildrenDescUIsForDescUI: function* (desc_ui) {
+  getChildrenDescUIsForDescUI: co.wrap(function* (desc_ui) {
 
     let childrenDescUIs = [];
 
@@ -372,7 +373,7 @@ var meshTreeFuncs = {
 
     return childrenDescUIs;
 
-  },
+  }),
 
   /*
   * Returns sibling descriptor records UIs
@@ -380,7 +381,7 @@ var meshTreeFuncs = {
   *
   * Example: 'D015834' returns ['D012345', 'D000926', 'D012346']
   */
-  getSiblingDescUIsForDescUI: function* (desc_ui) {
+  getSiblingDescUIsForDescUI: co.wrap(function* (desc_ui) {
 
     let siblingDescUIs = [];
 
@@ -397,7 +398,7 @@ var meshTreeFuncs = {
 
     return siblingDescUIs;
 
-  },
+  }),
 
   /*
   * Returns descriptor records UI of closest common ancestors of two or more descriptor record UIs
@@ -405,7 +406,7 @@ var meshTreeFuncs = {
   *
   * Example: ['D000926', 'D012345'] returns ['D012343']
   */
-  getCommonAncestorsForDescUIs: function* (desc_ui_arr) {
+  getCommonAncestorsForDescUIs: co.wrap(function* (desc_ui_arr) {
 
     if (!_.isArray(desc_ui_arr)) raise('input not an array.');
 
@@ -469,10 +470,10 @@ var meshTreeFuncs = {
 
     return commonAncestorsDescUIs;
 
-  },
+  }),
 
 
 
 };
 
-module.exports = meshTreeFuncs;
+module.exports = meshTree;

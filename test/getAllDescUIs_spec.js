@@ -6,7 +6,7 @@ describe('get array of all descriptor UIs', function () {
 
   before(function (done) {
     this.timeout(15000);
-    co(meshTreeFuncs.getAllDescUIs()).then(function (result) {
+    meshTree.getAllDescUIs().then(function (result) {
       allDescUIs = result;
       done();
     });

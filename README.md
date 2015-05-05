@@ -42,7 +42,7 @@ This package can be run as a service or be imported as a module.
 
 #### Running as service
 
-Can be run as service with command `npm run server`, which listens for requests at `localhost` on port `7770` by default. The API is simply is a serialized JSON object with the following fields:
+Can be run as service with command `npm run server`, which listens for requests at `localhost` on port `7770` by default. For proper functioning, ZeroMQ must be installed on the system (`brew install zeromq` on Mac OS X), with `npm install zmq`. The API is simply is a serialized JSON object with the following fields:
 
 `job_id`: job unique identifier
 
@@ -69,6 +69,16 @@ def mesh_tree_rpc(taskname, *args):
 ```
 
 ## API
+
+All functions return a `Promise`, and can be used as follows:
+
+```
+let meshTree = require('mesh-tree');
+
+meshTree.getAllDescUIs().then(result => {
+    ...
+});
+```
 
 ### getAllDescUIs()
 
@@ -169,7 +179,7 @@ Example: `D015834 (Cochlear Diseases)` returns `D018159 (Endolymphatic Hydrops),
 
 ### getCommonAncestorsForDescUIs(desc_ui_arr)
 
-Returns descriptor records UI of closest common ancestors of two or more descriptor record UIs (if a descriptor exists in more than one place on the tree, there will be more than one common ancestor).
+Takes as argument an array of descriptor record UIs and returns descriptor records UI of closest common ancestors of two or more descriptor record UIs (if a descriptor exists in more than one branch on the tree, there may be more than one common ancestor).
 
 Example: `D012345 (RNA, Transfer, Amino Acid-Specific), D000926 (Anticodon)` returns `D012343 (RNA, Transfer)`
 
