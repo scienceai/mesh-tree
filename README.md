@@ -48,7 +48,7 @@ Can be run as service with command `npm run server`, which listens for requests 
 
 `taskname`: function name as a string (see API below)
 
-`payload`: argument(s), for example `desc_ui`
+`payload`: argument(s), for example `descUI`
 
 An simple example of a client function in python:
 
@@ -80,15 +80,15 @@ meshTree.getAllDescUIs().then(result => {
 });
 ```
 
-### getAllDescUIs()
+#### getAllDescUIs ()
 
 Returns array of all descriptor record UIs
 
-### getAllChemUIs()
+#### getAllChemUIs ()
 
 Returns array of all chemical supplementary record UIs
 
-### getWikipediaEntryByDescUI([desc_ui, level])
+#### getWikipediaEntryByDescUI (descUI, level)
 
 Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
 
@@ -100,49 +100,49 @@ One can extract either the abstract or entire body of text from wikipedia (clean
 
 This is useful for providing additional relatively high quality and easily accessible context, for example in machine learning training.
 
-### getTreeNumbersByDescUI(desc_ui)
+#### getTreeNumbersByDescUI (descUI)
 
 Returns array of tree numbers by descriptor record unique identifier.
 
 Example: `'D000001'` returns `['D03.438.221.173']`
 
-### getDescUIByTreeNumber(tree_num)
+#### getDescUIByTreeNumber (treeNum)
 
 Returns descriptor record unique identifier by tree number.
 
 Example: `'D03.438.221.173'` returns `'D000001'`
 
-### getRecordPreferredTermByDescUI(desc_ui)
+#### getRecordPreferredTermByDescUI (descUI)
 
 Returns the record preferred term by descriptor record unique identifier (i.e., the preferred term of the preferred concept).
 
 Example: `'D000001'` returns `'Calcimycin'`
 
-### getPreferredConceptByDescUI(desc_ui)
+#### getPreferredConceptByDescUI (descUI)
 
 Returns preferred concept UI for descriptor record UI.
 
 Example: `'D000001'` returns `'M0000001'`
 
-### getConceptUIsByDescUI(desc_ui)
+#### getConceptUIsByDescUI (descUI)
 
 Returns all concept UIs contained by descriptor record UI (both preferred and not).
 
 Example: `'D000001'` returns `['M0353609', 'M0000001']`
 
-### getTermUIsByConceptUI(concept_ui)
+#### getTermUIsByConceptUI (conceptUI)
 
 Returns all term UIs contained by concept UI (both preferred and not).
 
 Example: `'M0353609'` returns `['T000003', 'T000004', 'T000001']`
 
-### getTermsByTermUI(term_ui)
+#### getTermsByTermUI (termUI)
 
 Returns all terms contained by term UI (both preferred and not).
 
 Example: `'T000003'` returns `['A23187, Antibiotic', 'Antibiotic A23187']`
 
-### getAllTermsByDescUI(desc_ui)
+#### getAllTermsByDescUI (descUI)
 
 Returns all terms by descriptor record unique identifier (i.e., all terms for all concepts, both preferred and not).
 
@@ -152,32 +152,32 @@ Can also use chemical supplementary concept records UIs here as well:
 
 Example: `'D000001'` returns `['CH-A1-MG', 'alpha 1 microglobulin, chorionic', 'chorionic alpha 1-microglobulin', 'chorionic alpha(1)-microglobulin']`
 
-### getScopeNoteByDescUI(desc_ui)
+#### getScopeNoteByDescUI (descUI)
 
 Returns scope note for descriptor record unique identifier (scope notes are contained in the preferred concept record).
 
 Example: `'D000001'`, via concept `'M0000001'`, returns `'An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems.'`
 
-### getParentDescUIsForDescUI(desc_ui)
+#### getParentDescUIsForDescUI (descUI)
 
 Returns parent descriptor records UIs (returns an array as records can exist in multiple tree branches).
 
 Example: `'D000001'` returns `['D001583']`
 Example: `'C025734'` returns `['D006197', 'D005123']`
 
-### getChildrenDescUIsForDescUI(desc_ui)
+#### getChildrenDescUIsForDescUI (descUI)
 
 Returns children descriptor records UIs (immediate, not descendants)
 
 Example: `'D012343'` returns `['D012345', 'D000926', 'D012346']`
 
-### getSiblingDescUIsForDescUI(desc_ui)
+#### getSiblingDescUIsForDescUI (descUI)
 
 Returns sibling descriptor records UIs (across all branches a descriptor record may exist under).
 
 Example: `D015834 (Cochlear Diseases)` returns `D018159 (Endolymphatic Hydrops), D015837 (Vestibular Diseases), D007762 (Labyrinthitis)`
 
-### getCommonAncestorsForDescUIs(desc_ui_arr)
+#### getCommonAncestorsForDescUIs (descUIArray)
 
 Takes as argument an array of descriptor record UIs and returns descriptor records UI of closest common ancestors of two or more descriptor record UIs (if a descriptor exists in more than one branch on the tree, there may be more than one common ancestor).
 
@@ -186,3 +186,57 @@ Example: `D012345 (RNA, Transfer, Amino Acid-Specific), D000926 (Anticodon)` ret
 Example: `D000233 (Adenoidectomy), D014068 (Tonsillectomy), D007828 (Laryngoscopy)` returns `D013517 (Otorhinolaryngologic Surgical Procedures)`
 
 Example: `D011434 (Proprioception), D014785 (Vision, Ocular), D004856 (Postural Balance)` returns `D012677 (Sensation)`
+
+#### isDescendantOf (descUI1, descUI2)
+
+Tests whether or not descUI2 is a descendant of descUI1 (child of >=1 depth)
+
+#### clusterDescUIs (descUIArray)
+
+Takes a flat array of descriptor record UIs and returns a nested tree structure based on parent-descendant relationships amongst all the array elements. In other words, it recreates a subtree based on the overarching MeSH ontology tree on a given list of element nodes.
+
+For example, given `D000233 (Adenoidectomy), D014068 (Tonsillectomy), D007828 (Laryngoscopy), D013517 (Otorhinolaryngologic Surgical Procedures)`, the following is returned:
+
+```
+[
+  {
+    "descUI": "D013517",
+    "parent": null,
+    "children": [
+      {
+        "descUI": "D000233",
+        "parent": "D013517"
+      },
+      {
+        "descUI": "D014068",
+        "parent": "D013517"
+      },
+      {
+        "descUI": "D007828",
+        "parent": "D013517"
+      }
+    ]
+  }
+]
+```
+
+An example for a list containing more than one "relative top-level" element, such as `D011434 (Proprioception), D014785 (Vision, Ocular), D004856 (Postural Balance)`, gives:
+
+```
+[
+  {
+    "descUI": "D011434",
+    "parent": null,
+    "children": [
+      {
+        "descUI": "D004856",
+        "parent": "D011434"
+      }
+    ]
+  },
+  {
+    "descUI": "D014785",
+    "parent": null
+  }
+]
+```

@@ -63,11 +63,9 @@ let meshTree = {
   *   `0` - abstract only
   *   `1` - all text
   */
-  getWikipediaEntryByDescUI: co.wrap(function* (args) {
+  getWikipediaEntryByDescUI: co.wrap(function* (descUI, level) {
 
-    let [desc_ui, level] = args;
-
-    let concept = yield this.getRecordPreferredTermByDescUI(desc_ui);
+    let concept = yield this.getRecordPreferredTermByDescUI(descUI);
     let wiki = yield wikipedia.getMainSections(concept.replace(/ /g, '+'));
 
     if (level === 0) {
@@ -106,10 +104,10 @@ let meshTree = {
   *
   * Example: 'D000001' returns ['D03.438.221.173']
   */
-  getTreeNumbersByDescUI: co.wrap(function* (desc_ui) {
+  getTreeNumbersByDescUI: co.wrap(function* (descUI) {
 
     let result = yield dbSearch({
-      subject: MESH + desc_ui,
+      subject: MESH + descUI,
       predicate: MESHV + 'treeNumber',
       object: db.v('treeNumber')
     }, {});
@@ -124,17 +122,19 @@ let meshTree = {
   *
   * Example: 'D03.438.221.173' returns 'D000001'
   */
-  getDescUIByTreeNumber: co.wrap(function* (tree_num) {
+  getDescUIByTreeNumber: co.wrap(function* (treeNum) {
 
     let result = yield dbSearch({
       subject: db.v('descUI'),
       predicate: MESHV + 'treeNumber',
-      object: MESH + tree_num
+      object: MESH + treeNum
     }, {});
 
-    if (_.isEmpty(result)) throw('empty result.');
-
-    return result[0]['descUI'].replace(MESH, '');
+    if (_.isEmpty(result)) {
+      return null;
+    } else {
+      return result[0]['descUI'].replace(MESH, '');
+    }
 
   }),
 
@@ -144,10 +144,10 @@ let meshTree = {
   *
   * Example: 'D000001' returns 'Calcimycin'
   */
-  getRecordPreferredTermByDescUI: co.wrap(function* (desc_ui) {
+  getRecordPreferredTermByDescUI: co.wrap(function* (descUI) {
 
     let result1 = yield dbSearch({
-      subject: MESH + desc_ui,
+      subject: MESH + descUI,
       predicate: MESHV + 'recordPreferredTerm',
       object: db.v('recordPreferredTermUI')
     }, {});
@@ -171,10 +171,10 @@ let meshTree = {
   *
   * Example: 'D000001' returns 'M0000001'
   */
-  getPreferredConceptByDescUI: co.wrap(function* (desc_ui) {
+  getPreferredConceptByDescUI: co.wrap(function* (descUI) {
 
     let result = yield dbSearch({
-      subject: MESH + desc_ui,
+      subject: MESH + descUI,
       predicate: MESHV + 'preferredConcept',
       object: db.v('conceptUI')
     }, {});
@@ -191,14 +191,14 @@ let meshTree = {
   *
   * Example: 'D000001' returns [ 'M0353609', 'M0000001' ]
   */
-  getConceptUIsByDescUI: co.wrap(function* (desc_ui) {
+  getConceptUIsByDescUI: co.wrap(function* (descUI) {
 
     let allConceptUIs = [];
 
     for (let pred of ['concept', 'preferredConcept']) {
 
       let result = yield dbSearch({
-        subject: MESH + desc_ui,
+        subject: MESH + descUI,
         predicate: MESHV + pred,
         object: db.v('conceptUI')
       }, {});
@@ -217,14 +217,14 @@ let meshTree = {
   *
   * Example: 'M0353609' returns [ 'T000003', 'T000004', 'T000001' ]
   */
-  getTermUIsByConceptUI: co.wrap(function* (concept_ui) {
+  getTermUIsByConceptUI: co.wrap(function* (conceptUI) {
 
     let allTermUIs = [];
 
     for (let pred of ['term', 'preferredTerm']) {
 
       let result = yield dbSearch({
-        subject: MESH + concept_ui,
+        subject: MESH + conceptUI,
         predicate: MESHV + pred,
         object: db.v('termUI')
       }, {});
@@ -243,14 +243,14 @@ let meshTree = {
   *
   * Example: 'T000003' returns [ 'A23187, Antibiotic', 'Antibiotic A23187' ]
   */
-  getTermsByTermUI: co.wrap(function* (term_ui) {
+  getTermsByTermUI: co.wrap(function* (termUI) {
 
     let allLabels = [];
 
     for (let pred of ['label', 'altLabel', 'prefLabel']) {
 
       let result = yield dbSearch({
-        subject: MESH + term_ui,
+        subject: MESH + termUI,
         predicate: MESHV + pred,
         object: db.v('label')
       }, {});
@@ -269,15 +269,15 @@ let meshTree = {
   *
   * Example: 'D000001' returns [ 'A23187, Antibiotic', 'Antibiotic A23187', 'A23187', 'A 23187', 'A-23187', 'Calcimycin' ]
   */
-  getAllTermsByDescUI: co.wrap(function* (desc_ui) {
+  getAllTermsByDescUI: co.wrap(function* (descUI) {
 
     let allTerms = [];
 
-    let conceptUIs = yield this.getConceptUIsByDescUI(desc_ui);
-    for (let concept_ui of conceptUIs) {
-      let termUIs = yield this.getTermUIsByConceptUI(concept_ui);
-      for (let term_ui of termUIs) {
-        let labels = yield this.getTermsByTermUI(term_ui);
+    let conceptUIs = yield this.getConceptUIsByDescUI(descUI);
+    for (let conceptUI of conceptUIs) {
+      let termUIs = yield this.getTermUIsByConceptUI(conceptUI);
+      for (let termUI of termUIs) {
+        let labels = yield this.getTermsByTermUI(termUI);
         labels.forEach((label) => allTerms.push(label.replace(/\"/g, '')));
       }
     }
@@ -292,12 +292,12 @@ let meshTree = {
   *
   * Example: 'D000001', via concept 'M0000001', returns 'An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems.'
   */
-  getScopeNoteByDescUI: co.wrap(function* (desc_ui) {
+  getScopeNoteByDescUI: co.wrap(function* (descUI) {
 
-    let concept_ui = yield this.getPreferredConceptByDescUI(desc_ui);
+    let conceptUI = yield this.getPreferredConceptByDescUI(descUI);
 
     let result = yield dbSearch({
-      subject: MESH + concept_ui,
+      subject: MESH + conceptUI,
       predicate: MESHV + 'scopeNote',
       object: db.v('scopeNote')
     }, {});
@@ -317,11 +317,11 @@ let meshTree = {
   * Example: 'D000001' returns ['D001583']
   *          'D005138' returns ['D006197', 'D005123']
   */
-  getParentDescUIsForDescUI: co.wrap(function* (desc_ui) {
+  getParentDescUIsForDescUI: co.wrap(function* (descUI) {
 
     let parentDescUIs = [];
 
-    let treeNums = yield this.getTreeNumbersByDescUI(desc_ui);
+    let treeNums = yield this.getTreeNumbersByDescUI(descUI);
 
     for (let treeNum of treeNums) {
 
@@ -332,8 +332,8 @@ let meshTree = {
       }, {});
 
       if (!_.isEmpty(result)) {
-        let descUI = yield this.getDescUIByTreeNumber(result[0]['treeNum'].replace(MESH, ''));
-        parentDescUIs.push(descUI);
+        let ui = yield this.getDescUIByTreeNumber(result[0]['treeNum'].replace(MESH, ''));
+        parentDescUIs.push(ui);
       }
 
     }
@@ -348,11 +348,11 @@ let meshTree = {
   *
   * Example: 'D012343' returns ['D012345', 'D000926', 'D012346']
   */
-  getChildrenDescUIsForDescUI: co.wrap(function* (desc_ui) {
+  getChildrenDescUIsForDescUI: co.wrap(function* (descUI) {
 
     let childrenDescUIs = [];
 
-    let treeNums = yield this.getTreeNumbersByDescUI(desc_ui);
+    let treeNums = yield this.getTreeNumbersByDescUI(descUI);
 
     for (let treeNum of treeNums) {
 
@@ -364,8 +364,8 @@ let meshTree = {
 
       if (!_.isEmpty(result)) {
         for (let res of result) {
-          let descUI = yield this.getDescUIByTreeNumber(res['treeNum'].replace(MESH, ''));
-          childrenDescUIs.push(descUI);
+          let ui = yield this.getDescUIByTreeNumber(res['treeNum'].replace(MESH, ''));
+          childrenDescUIs.push(ui);
         }
       }
 
@@ -381,11 +381,11 @@ let meshTree = {
   *
   * Example: 'D015834' returns ['D012345', 'D000926', 'D012346']
   */
-  getSiblingDescUIsForDescUI: co.wrap(function* (desc_ui) {
+  getSiblingDescUIsForDescUI: co.wrap(function* (descUI) {
 
     let siblingDescUIs = [];
 
-    let parentDescUIs = yield this.getParentDescUIsForDescUI(desc_ui);
+    let parentDescUIs = yield this.getParentDescUIsForDescUI(descUI);
 
     for (let parent of parentDescUIs) {
 
@@ -394,7 +394,7 @@ let meshTree = {
 
     }
 
-    _.remove(siblingDescUIs, (ui) => (ui === desc_ui));
+    _.remove(siblingDescUIs, (ui) => (ui === descUI));
 
     return siblingDescUIs;
 
@@ -406,22 +406,22 @@ let meshTree = {
   *
   * Example: ['D000926', 'D012345'] returns ['D012343']
   */
-  getCommonAncestorsForDescUIs: co.wrap(function* (desc_ui_arr) {
+  getCommonAncestorsForDescUIs: co.wrap(function* (descUIArray) {
 
-    if (!_.isArray(desc_ui_arr)) raise('input not an array.');
+    if (!_.isArray(descUIArray)) raise('input not an array.');
 
     let commonAncestorsDescUIs = [];
     let commonAncestorsTreeNums = [];
 
-    let treeNums_arr = [];
-    for (let desc_ui of desc_ui_arr) {
-      let treeNums = yield this.getTreeNumbersByDescUI(desc_ui);
-      treeNums_arr.push(treeNums);
+    let treeNumsArray = [];
+    for (let descUI of descUIArray) {
+      let treeNums = yield this.getTreeNumbersByDescUI(descUI);
+      treeNumsArray.push(treeNums);
     }
 
-    let treeNum_permutations = permutations.apply(null, treeNums_arr);
+    let treeNumPermutations = permutations.apply(null, treeNumsArray);
 
-    for (let permut of treeNum_permutations) {
+    for (let permut of treeNumPermutations) {
 
       let depth = 0;
       let branches = [];
@@ -474,49 +474,99 @@ let meshTree = {
 
 
   /*
-  * Clusters a list of descriptor records
+  * Tests whether or not descUI2 is a descendant of descUI1 (child of >=1 depth)
   */
-  clusterDescUIs: co.wrap(function* (desc_ui_arr) {
+  isDescendantOf: co.wrap(function* (descUI1, descUI2) {
 
-    if (!_.isArray(desc_ui_arr)) raise('input not an array.');
+    let treeNumbers1 = yield this.getTreeNumbersByDescUI(descUI1);
+    let treeNumbers2 = yield this.getTreeNumbersByDescUI(descUI2);
 
+    let permuteTable = _.flatten(
+      _.map(treeNumbers1, (x) => {
+        return _.map(treeNumbers2, (y) => _.startsWith(y, x));
+      })
+    );
+
+    return _.any(permuteTable);
+
+  }),
+
+
+  /*
+  * Creates a subtree from a flat list of descriptor record UIs based on parent-child relationships within the MeSH ontology tree.
+  */
+  clusterDescUIs: co.wrap(function* (descUIArray) {
+
+    // input must be array
+    if (!_.isArray(descUIArray)) raise('input not an array.');
+
+    // create array of parent-child relationship objects
     let relationships = [];
 
-    _.forEach(desc_ui_arr, (desc_ui) => {
+    for (let descUI of descUIArray) {
 
-      let parentsAll = yield this.getParentDescUIsForDescUI(desc_ui);
-      let parents = _.intersection(parentsAll, desc_ui_arr);
+      let parentsAllSet = new Set();
+
+      let nodes = [descUI];
+      let hasParents = true;
+
+      while (hasParents) {
+        let nodesTemp = [];
+
+        for (let node of nodes) {;
+          let parentsTemp = yield this.getParentDescUIsForDescUI(node);
+
+          nodesTemp.push(parentsTemp);
+          _.forEach(parentsTemp, (p) => parentsAllSet.add(p));
+        }
+
+        nodes = _.flatten(nodesTemp);
+
+        hasParents = nodes.length > 0
+      }
+
+      let parentsAllArray = Array.from(parentsAllSet);
+
+      let parents = _.intersection(parentsAllArray, descUIArray);
 
       _.forEach(parents, (parent) => {
         relationships.push({
-          'desc_ui': desc_ui,
+          'descUI': descUI,
           'parent': parent
         });
       });
 
-    });
+      if (parents.length === 0) {
+        relationships.push({
+          'descUI': descUI,
+          'parent': null
+        });
+      }
 
+    }
+
+    // recursive function for clustering
     function treeCluster(relationsList, parent, tree) {
 
       if (typeof tree === 'undefined') {
         var tree = [];
       }
       if (typeof parent === 'undefined') {
-        var parent = { 'desc_ui': null, 'parent': null };
+        var parent = { 'descUI': null, 'parent': null };
       }
 
-      let children = _.filter(array, (child) => {
-        return child.parent === parent.desc_ui;
+      let children = _.filter(relationsList, (child) => {
+        return child.parent === parent.descUI;
       });
 
       if (!_.isEmpty(children)) {
-        if (_.isNull(parent.desc_ui)) {
+        if (_.isNull(parent.descUI)) {
           tree = children;
         } else {
           parent['children'] = children;
         }
 
-        _.forEach(children, (child) {
+        _.forEach(children, (child) => {
           treeCluster(relationsList, child);
         });
       }
