@@ -480,25 +480,51 @@ let meshTree = {
 
     if (!_.isArray(desc_ui_arr)) raise('input not an array.');
 
-    let clustered = {};
-    let desc_ui_arr2 = _.clone(desc_ui_arr);
+    let relationships = [];
 
-    while (desc_ui_arr2.length > 0) {
+    _.forEach(desc_ui_arr, (desc_ui) => {
 
-      desc_ui_arr2 = _.filter(desc_ui_arr2, (desc_ui) => {
+      let parentsAll = yield this.getParentDescUIsForDescUI(desc_ui);
+      let parents = _.intersection(parentsAll, desc_ui_arr);
 
-        let parents = yield this.getParentDescUIsForDescUI(desc_ui);
-        let hasParents = _.intersection(parents, desc_ui_arr2);
-
-        if (!hasParent) {
-          clustered[desc_ui] = [];
-        }
-
-        return hasParent;
-
+      _.forEach(parents, (parent) => {
+        relationships.push({
+          'desc_ui': desc_ui,
+          'parent': parent
+        });
       });
 
+    });
+
+    function treeCluster(relationsList, parent, tree) {
+
+      if (typeof tree === 'undefined') {
+        var tree = [];
+      }
+      if (typeof parent === 'undefined') {
+        var parent = { 'desc_ui': null, 'parent': null };
+      }
+
+      let children = _.filter(array, (child) => {
+        return child.parent === parent.desc_ui;
+      });
+
+      if (!_.isEmpty(children)) {
+        if (_.isNull(parent.desc_ui)) {
+          tree = children;
+        } else {
+          parent['children'] = children;
+        }
+
+        _.forEach(children, (child) {
+          treeCluster(relationsList, child);
+        });
+      }
+
+      return tree;
     }
+
+    return treeCluster(relationships);
 
   })
 
