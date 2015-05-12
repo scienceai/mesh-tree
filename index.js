@@ -473,6 +473,36 @@ let meshTree = {
   }),
 
 
+  /*
+  * Clusters a list of descriptor records
+  */
+  clusterDescUIs: co.wrap(function* (desc_ui_arr) {
+
+    if (!_.isArray(desc_ui_arr)) raise('input not an array.');
+
+    let clustered = {};
+    let desc_ui_arr2 = _.clone(desc_ui_arr);
+
+    while (desc_ui_arr2.length > 0) {
+
+      desc_ui_arr2 = _.filter(desc_ui_arr2, (desc_ui) => {
+
+        let parents = yield this.getParentDescUIsForDescUI(desc_ui);
+        let hasParents = _.intersection(parents, desc_ui_arr2);
+
+        if (!hasParent) {
+          clustered[desc_ui] = [];
+        }
+
+        return hasParent;
+
+      });
+
+    }
+
+  })
+
+
 
 };
 
