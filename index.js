@@ -7,10 +7,10 @@ let levelgraph = require('levelgraph')
   , co = require('co');
 
 let db;
-if (process.env['MESH_TREE_TESTDB']) {
-  db = levelgraphN3(levelgraph(process.env['MESH_TREE_TESTDB']));
+if (process.env['NODE_ENV'] === 'test') {
+  db = levelgraphN3(levelgraph(process.env['PATH_TO_MESH_TESTDB']));
 } else {
-  db = levelgraphN3(levelgraph('db'));
+  db = levelgraphN3(levelgraph(process.env['PATH_TO_MESH_DB']));
 }
 let dbSearch = Bluebird.promisify(db.search);
 
@@ -36,6 +36,7 @@ let meshTree = {
     }, {});
 
     let allDescUIs = _.map(result, (item) => item['desc'].replace(MESH, ''));
+
     return allDescUIs;
 
   }),

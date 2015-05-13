@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "initdb-test": "tar -xzf test/fixtures/mesh_subset.nt.tar.gz -C test/fixtures; node_modules/levelgraph-n3/import.js test/fixtures/mesh_subset.nt -o ./dbtest; rm test/fixtures/mesh_subset.nt",
-    "test": "MESH_TREE_TESTDB=dbtest node_modules/.bin/mocha --reporter spec --compilers js:babel/register",
-    "initdb": "node_modules/levelgraph-n3/import.js $PATH_TO_MESH_RDF -o ./db",
-    "initdb-quiet": "node_modules/levelgraph-n3/import.js --quiet $PATH_TO_MESH_RDF -o ./db",
+    "test": "NODE_ENV=test PATH_TO_MESH_TESTDB=dbtest node_modules/.bin/mocha --reporter spec --compilers js:babel/register",
+    "initdb": "node_modules/levelgraph-n3/import.js $PATH_TO_MESH_RDF -o $PATH_TO_MESH_DB",
+    "initdb-quiet": "node_modules/levelgraph-n3/import.js --quiet $PATH_TO_MESH_RDF -o $PATH_TO_MESH_DB",
     "coverage": "rm -rf coverage; MESH_TREE_TESTDB=dbtest node_modules/.bin/babel-node -r node_modules/.bin/isparta cover _mocha --report lcovonly -- --reporter spec --compilers js:babel/register --bail",
     "publish-coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "server": "node ./util/server.js"
