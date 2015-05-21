@@ -1,6 +1,6 @@
 {
   "name": "mesh-tree",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Utility functions for traversing the Medical Subject Heading (MeSH) tree",
   "main": "index.js",
   "scripts": {
@@ -42,7 +42,6 @@
     "mocha": "^2.2.1"
   },
   "dependencies": {
-    "babel": "^5.0.8",
     "bluebird": "^2.9.14",
     "cheerio": "^0.19.0",
     "co": "^4.5.1",
@@ -51,7 +50,7 @@
     "levelgraph": "^0.10.2",
     "levelgraph-jsonld": "^0.4.0",
     "levelgraph-n3": "^0.5.0",
-    "levelup": "^0.19.0",
+    "levelup": "^1.1.0",
     "lodash": "^3.5.0",
     "prettyjson": "^1.1.0",
     "progress-stream": "^1.0.1",
