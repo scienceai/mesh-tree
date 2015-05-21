@@ -506,7 +506,7 @@ let meshTree = {
 
     for (let descUI of descUIArray) {
 
-      let parentsAllSet = new Set();
+      let parentsAll = [];
 
       let nodes = [descUI];
       let hasParents = true;
@@ -517,31 +517,34 @@ let meshTree = {
         for (let node of nodes) {;
           let parentsTemp = yield this.getParentDescUIsForDescUI(node);
 
-          nodesTemp.push(parentsTemp);
-          _.forEach(parentsTemp, (p) => parentsAllSet.add(p));
+          _.each(parentsTemp, (p) => {
+            parentsAll.push(p);
+            nodesTemp.push(p);
+          });
         }
 
-        nodes = _.flatten(nodesTemp);
-
+        nodes = nodesTemp;
         hasParents = nodes.length > 0
       }
 
-      let parentsAllArray = Array.from(parentsAllSet);
-
-      let parents = _.intersection(parentsAllArray, descUIArray);
-
-      _.forEach(parents, (parent) => {
-        relationships.push({
-          'descUI': descUI,
-          'parent': parent
-        });
-      });
+      let parents = _.intersection(parentsAll, descUIArray);
 
       if (parents.length === 0) {
+
         relationships.push({
           'descUI': descUI,
           'parent': null
         });
+
+      } else {
+
+        _.each(parents, (parent) => {
+          relationships.push({
+            'descUI': descUI,
+            'parent': parent
+          });
+        });
+
       }
 
     }
@@ -567,7 +570,7 @@ let meshTree = {
           parent['children'] = children;
         }
 
-        _.forEach(children, (child) => {
+        _.each(children, (child) => {
           treeCluster(relationsList, child);
         });
       }
