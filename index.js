@@ -339,7 +339,7 @@ let meshTree = {
 
     }
 
-    return parentDescUIs;
+    return _.unique(parentDescUIs);
 
   }),
 
@@ -524,23 +524,25 @@ let meshTree = {
 
       let nodes = [descUI];
       let hasParents = true;
+      let parentsFound = false;
 
-      while (hasParents) {
+      while (hasParents && !parentsFound) {
         let nodesTemp = [];
 
         for (let node of nodes) {
           let parentsTemp = yield this.getParentDescUIsForDescUI(node);
-          let parentsFound = _.intersection(parentsTemp, descUIArray);
+          let parentsInArray = _.intersection(parentsTemp, descUIArray);
 
-          if (parentsFound.length > 0) {
-            _.each(parentsFound, (p) => parents.push(p));
+          if (parentsInArray.length > 0) {
+            _.each(parentsInArray, (p) => parents.push(p));
+            parentsFound = true;
           } else {
             _.each(parentsTemp, (p) => nodesTemp.push(p));
           }
         }
 
         nodes = nodesTemp;
-        hasParents = nodes.length > 0
+        hasParents = nodesTemp.length > 0
       }
 
       if (parents.length === 0) {
