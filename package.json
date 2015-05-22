@@ -8,7 +8,7 @@
     "test": "NODE_ENV=test PATH_TO_MESH_TESTDB=dbtest node_modules/.bin/mocha --reporter spec --compilers js:babel/register",
     "initdb": "node_modules/levelgraph-n3/import.js $PATH_TO_MESH_RDF -o $PATH_TO_MESH_DB",
     "initdb-quiet": "node_modules/levelgraph-n3/import.js --quiet $PATH_TO_MESH_RDF -o $PATH_TO_MESH_DB",
-    "coverage": "rm -rf coverage; MESH_TREE_TESTDB=dbtest node_modules/.bin/babel-node -r node_modules/.bin/isparta cover _mocha --report lcovonly -- --reporter spec --compilers js:babel/register --bail",
+    "coverage": "rm -rf coverage; NODE_ENV=test PATH_TO_MESH_TESTDB=dbtest node_modules/.bin/babel-node -r node_modules/.bin/isparta cover _mocha --report lcovonly -- --reporter spec --compilers js:babel/register --bail",
     "publish-coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "server": "node ./util/server.js"
   },
