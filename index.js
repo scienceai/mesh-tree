@@ -479,16 +479,30 @@ let meshTree = {
   */
   isDescendantOf: co.wrap(function* (descUI1, descUI2) {
 
-    let treeNumbers1 = yield this.getTreeNumbersByDescUI(descUI1);
-    let treeNumbers2 = yield this.getTreeNumbersByDescUI(descUI2);
+    if (descUI1 === descUI2) return false;
 
-    let permuteTable = _.flatten(
-      _.map(treeNumbers1, (x) => {
-        return _.map(treeNumbers2, (y) => _.startsWith(y, x));
-      })
-    );
+    let parentsAll = [];
 
-    return _.any(permuteTable);
+    let nodes = [descUI2];
+    let hasParents = true;
+
+    while (hasParents) {
+      let nodesTemp = [];
+
+      for (let node of nodes) {;
+        let parentsTemp = yield this.getParentDescUIsForDescUI(node);
+
+        _.each(parentsTemp, (p) => {
+          parentsAll.push(p);
+          nodesTemp.push(p);
+        });
+      }
+
+      nodes = nodesTemp;
+      hasParents = nodes.length > 0
+    }
+
+    return _.includes(parentsAll, descUI1);
 
   }),
 
@@ -506,7 +520,7 @@ let meshTree = {
 
     for (let descUI of descUIArray) {
 
-      let parentsAll = [];
+      let parents = [];
 
       let nodes = [descUI];
       let hasParents = true;
@@ -514,20 +528,20 @@ let meshTree = {
       while (hasParents) {
         let nodesTemp = [];
 
-        for (let node of nodes) {;
+        for (let node of nodes) {
           let parentsTemp = yield this.getParentDescUIsForDescUI(node);
+          let parentsFound = _.intersection(parentsTemp, descUIArray);
 
-          _.each(parentsTemp, (p) => {
-            parentsAll.push(p);
-            nodesTemp.push(p);
-          });
+          if (parentsFound.length > 0) {
+            _.each(parentsFound, (p) => parents.push(p));
+          } else {
+            _.each(parentsTemp, (p) => nodesTemp.push(p));
+          }
         }
 
         nodes = nodesTemp;
         hasParents = nodes.length > 0
       }
-
-      let parents = _.intersection(parentsAll, descUIArray);
 
       if (parents.length === 0) {
 
