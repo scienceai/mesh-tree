@@ -1,17 +1,18 @@
 'use strict';
 
 let levelgraph = require('levelgraph')
+  , level = require('level')
   , levelgraphN3 = require('levelgraph-n3')
   , _ = require('lodash')
   , Bluebird = require('bluebird')
   , co = require('co');
 
-let db;
+let dbPath = process.env['PATH_TO_MESH_DB'];
 if (process.env['NODE_ENV'] === 'test') {
-  db = levelgraphN3(levelgraph(process.env['PATH_TO_MESH_TESTDB']));
-} else {
-  db = levelgraphN3(levelgraph(process.env['PATH_TO_MESH_DB']));
+  dbPath = process.env['PATH_TO_MESH_TESTDB'];
 }
+
+let db = levelgraphN3(levelgraph(level(dbPath)));
 let dbSearch = Bluebird.promisify(db.search);
 
 let wikipedia = require('./lib/wikipedia')
