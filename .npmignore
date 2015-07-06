@@ -1,0 +1,7 @@
+.git
+.gitignore
+.travis.yml
+coverage/
+db/
+dbtest/
+test/
