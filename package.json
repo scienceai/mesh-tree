@@ -35,23 +35,23 @@
     "url": "https://github.com/standard-analytics/mesh-tree/issues"
   },
   "devDependencies": {
-    "babel": "^5.5.6",
+    "babel": "^5.6.14",
     "chai": "^3.0.0",
     "coveralls": "^2.11.2",
     "isparta": "^3.0.3",
-    "mocha": "^2.2.1"
+    "mocha": "^2.2.5"
   },
   "dependencies": {
-    "bluebird": "^2.9.14",
+    "bluebird": "^2.9.32",
     "cheerio": "^0.19.0",
-    "co": "^4.5.1",
+    "co": "^4.5.4",
     "expand-home-dir": "0.0.2",
-    "level": "^1.1.0",
+    "level": "^1.2.0",
     "levelgraph": "^1.0.0",
     "levelgraph-n3": "^1.0.0",
-    "lodash": "^3.5.0",
-    "prettyjson": "^1.1.0",
-    "progress-stream": "^1.0.1",
-    "request": "^2.54.0"
+    "lodash": "^3.10.0",
+    "prettyjson": "^1.1.2",
+    "progress-stream": "^1.1.1",
+    "request": "^2.58.0"
   }
 }
