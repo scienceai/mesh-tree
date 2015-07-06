@@ -172,7 +172,14 @@ Example: `'D000001'`, via concept `'M0000001'`, returns `'An ionophorous, polyet
 Returns parent descriptor records UIs (returns an array as records can exist in multiple tree branches).
 
 Example: `'D000001'` returns `['D001583']`
-Example: `'C025734'` returns `['D006197', 'D005123']`
+Example: `'D005138'` returns `['D006197', 'D005123']`
+
+#### getAncestorDescUIsForDescUI (descUI)
+
+Returns all ancestor descriptor records UIs, following all parent branches. Returns an array.
+
+Example: `'D000001'` returns `['D001583', 'D006574', 'D006571']`
+Example: `'D005138'` returns `['D005123', 'D006197', 'D005145', 'D012679', 'D034582', 'D006257', 'D001829']`
 
 #### getChildrenDescUIsForDescUI (descUI)
 

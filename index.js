@@ -345,6 +345,37 @@ let meshTree = {
   }),
 
   /*
+  * Returns ancestor descriptor records UIs
+  * (returns an array)
+  *
+  * Example: 'D000001' returns ['D001583', 'D006574', 'D006571']
+  *          'D005138' returns ['D005123', 'D006197', 'D005145', 'D012679', 'D034582', 'D006257', 'D001829']
+  */
+  getAncestorDescUIsForDescUI: co.wrap(function* (descUI) {
+
+    let parents = [];
+
+    let nodes = [descUI];
+    let hasParents = true;
+
+    while (hasParents) {
+      let nodesTemp = [];
+
+      for (let node of nodes) {
+        let parentsTemp = yield this.getParentDescUIsForDescUI(node);
+        _.each(parentsTemp, (p) => nodesTemp.push(p));
+        _.each(parentsTemp, (p) => parents.push(p));
+      }
+
+      nodes = nodesTemp;
+      hasParents = nodesTemp.length > 0
+    }
+
+    return _.unique(parents);
+
+  }),
+
+  /*
   * Returns children descriptor records UIs
   * (immediate, not descendants)
   *
