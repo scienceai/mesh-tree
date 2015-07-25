@@ -65,9 +65,11 @@ let meshTree = {
   *   `0` - abstract only
   *   `1` - all text
   */
-  getWikipediaEntryByDescUI: co.wrap(function* (descUI, level) {
+  getWikipediaEntryByDescUI: co.wrap(function* (args) {
 
-    let concept = yield this.getRecordPreferredTermByDescUI(descUI);
+    const { descUI, level } = args[0];
+
+    let concept = yield this.getPreferredTermByDescUI(descUI);
     let wiki = yield wikipedia.getMainSections(concept.replace(/ /g, '+'));
 
     if (level === 0) {
@@ -146,25 +148,25 @@ let meshTree = {
   *
   * Example: 'D000001' returns 'Calcimycin'
   */
-  getRecordPreferredTermByDescUI: co.wrap(function* (descUI) {
+  getPreferredTermByDescUI: co.wrap(function* (descUI) {
 
     let result1 = yield dbSearch({
       subject: MESH + descUI,
-      predicate: MESHV + 'recordPreferredTerm',
-      object: db.v('recordPreferredTermUI')
+      predicate: MESHV + 'preferredTerm',
+      object: db.v('preferredTermUI')
     }, {});
 
-    if (_.isEmpty(result1)) throw('empty result.');
-
     let result2 = yield dbSearch({
-      subject: result1[0]['recordPreferredTermUI'],
+      subject: result1[0]['preferredTermUI'],
       predicate: MESHV + 'prefLabel',
       object: db.v('term')
     }, {});
 
     if (_.isEmpty(result2)) throw('empty result.');
 
-    return result2[0]['term'].replace(/\"/g, '');
+    let result2_en = result2.filter(r => r['term'].endsWith('@en'));
+
+    return result2_en[0]['term'].replace(/\"/g, '').replace(/@en/, '');
 
   }),
 
@@ -257,7 +259,9 @@ let meshTree = {
         object: db.v('label')
       }, {});
 
-      result.forEach((item) => allLabels.push(item['label'].replace(/\"/g, '')));
+      let result_en = result.filter(r => r['label'].endsWith('@en'));
+
+      result_en.forEach(item => allLabels.push(item['label'].replace(/\"/g, '').replace(/@en/, '')));
 
     }
 
@@ -307,7 +311,8 @@ let meshTree = {
     if (_.isEmpty(result)) {
       return '';
     } else {
-      return result[0]['scopeNote'].replace(/\"/g, '');
+      let result_en = result.filter(r => r['scopeNote'].endsWith('@en'));
+      return result_en[0]['scopeNote'].replace(/\"/g, '').replace(/@en/, '');
     }
 
   }),
@@ -329,7 +334,7 @@ let meshTree = {
 
       let result = yield dbSearch({
         subject: MESH + treeNum,
-        predicate: MESHV + 'broaderTransitive',
+        predicate: MESHV + 'parentTreeNumber',
         object: db.v('treeNum')
       }, {});
 
@@ -391,7 +396,7 @@ let meshTree = {
 
       let result = yield dbSearch({
         subject: db.v('treeNum'),
-        predicate: MESHV + 'broaderTransitive',
+        predicate: MESHV + 'parentTreeNumber',
         object: MESH + treeNum
       }, {});
 
