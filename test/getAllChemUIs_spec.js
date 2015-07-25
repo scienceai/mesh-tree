@@ -16,7 +16,7 @@ describe('get array of all chemical supplement record UIs', function () {
     expect(allChemUIs).to.be.instanceOf(Array);
   })
   it('should contain 220414 elements', function () {
-    expect(allChemUIs.length).to.eql(220414);
+    expect(allChemUIs.length).to.eql(222666);
   })
   it('should include C025735', function () {
     expect(allChemUIs).to.include('C025735');
