@@ -67,7 +67,8 @@ let meshTree = {
   */
   getWikipediaEntryByDescUI: co.wrap(function* (args) {
 
-    const { descUI, level } = args[0];
+    const descUI = args[0].descUI;
+    const level = args[0].level;
 
     let concept = yield this.getPreferredTermByDescUI(descUI);
     let wiki = yield wikipedia.getMainSections(concept.replace(/ /g, '+'));
