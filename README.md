@@ -28,7 +28,7 @@ Run `./bin/fetch_mesh.sh`. The script will prompt for the email used in registra
 
 #### 2. Transform to RDF
 
-See [HHS/meshrdf](https://github.com/HHS/meshrdf) for instructions on transforming MeSH from XML to RDF N-triples using Saxon (java). There are no issues with Saxon 9.6 home edition. Additional details are available at the meshrdf [website](http://hhs.github.io/meshrdf/). Note: as of March 2015, there is an error in the `qual2015.dtd` file where the line `<!ENTITY  % DescriptorRecordSet SYSTEM "desc2014.dtd">` needs to be changed to `desc2015.dtd` given that all the most up-to-date files are used. Export the path of Saxon `$SAXON_JAR` and run `./bin/mesh_xml2rdf.sh`. The RDF N-triples file will be produced at `$HOME/data/mesh/RDF`.
+See [HHS/meshrdf](https://github.com/HHS/meshrdf) for instructions on transforming MeSH from XML to RDF N-triples using Saxon (java). There are no issues with Saxon 9.6 home edition. Additional details are available at the meshrdf [website](http://hhs.github.io/meshrdf/). Note: still as of July 2015, there is an error in the `qual2015.dtd` file where the line `<!ENTITY  % DescriptorRecordSet SYSTEM "desc2014.dtd">` needs to be changed to `desc2015.dtd` given that all the most up-to-date files are used. Export the path of Saxon `$SAXON_JAR` and run `./bin/mesh_xml2rdf.sh`. The RDF N-triples file will be produced at `$HOME/data/mesh/RDF`.
 
 #### 3. Install dependencies
 
@@ -97,7 +97,9 @@ Returns array of all descriptor record UIs
 
 Returns array of all chemical supplementary record UIs
 
-#### getWikipediaEntryByDescUI (descUI, level)
+#### getWikipediaEntryByDescUI (opts)
+
+where `opts = { descUI, level }`.
 
 Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
 
@@ -121,9 +123,9 @@ Returns descriptor record unique identifier by tree number.
 
 Example: `'D03.438.221.173'` returns `'D000001'`
 
-#### getRecordPreferredTermByDescUI (descUI)
+#### getPreferredTermByDescUI (descUI)
 
-Returns the record preferred term by descriptor record unique identifier (i.e., the preferred term of the preferred concept).
+Returns the preferred term by descriptor record unique identifier (i.e., the preferred term of the preferred concept).
 
 Example: `'D000001'` returns `'Calcimycin'`
 
