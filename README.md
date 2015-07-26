@@ -89,13 +89,21 @@ meshTree.getAllDescUIs().then(result => {
 });
 ```
 
-#### getAllDescUIs ()
+#### getAllDescUIs()
 
 Returns array of all descriptor record UIs
 
-#### getAllChemUIs ()
+#### getAllSCRChemicalUIs()
 
 Returns array of all chemical supplementary record UIs
+
+#### getAllSCRDiseaseUIs()
+
+Returns array of all disease (rare) supplementary record UIs
+
+#### getAllSCRProtocolUIs()
+
+Returns array of all protocol (e.g., cancer-related) supplementary record UIs
 
 #### getWikipediaEntryByDescUI (opts)
 

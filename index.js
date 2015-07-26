@@ -45,16 +45,48 @@ let meshTree = {
   /*
   * Returns array of all chemical supplementary record UIs
   */
-  getAllChemUIs: co.wrap(function* () {
+  getAllSCRChemicalUIs: co.wrap(function* () {
 
     let result = yield dbSearch({
-      subject: db.v('chem'),
+      subject: db.v('chemicalSCR'),
       predicate: RDF + 'type',
       object: MESHV + 'SCR_Chemical'
     }, {});
 
-    let allChemUIs = _.map(result, (item) => item['chem'].replace(MESH, ''));
-    return allChemUIs;
+    let allSCRChemicalUIs = _.map(result, (item) => item['chemicalSCR'].replace(MESH, ''));
+    return allSCRChemicalUIs;
+
+  }),
+
+  /*
+  * Returns array of all disease (rare) supplementary record UIs
+  */
+  getAllSCRDiseaseUIs: co.wrap(function* () {
+
+    let result = yield dbSearch({
+      subject: db.v('diseaseSCR'),
+      predicate: RDF + 'type',
+      object: MESHV + 'SCR_Disease'
+    }, {});
+
+    let allSCRDiseaseUIs = _.map(result, (item) => item['diseaseSCR'].replace(MESH, ''));
+    return allSCRDiseaseUIs;
+
+  }),
+
+  /*
+  * Returns array of all protocol (e.g., cancer-related) supplementary record UIs
+  */
+  getAllSCRProtocolUIs: co.wrap(function* () {
+
+    let result = yield dbSearch({
+      subject: db.v('protocolSCR'),
+      predicate: RDF + 'type',
+      object: MESHV + 'SCR_Protocol'
+    }, {});
+
+    let allSCRProtocolUIs = _.map(result, (item) => item['protocolSCR'].replace(MESH, ''));
+    return allSCRProtocolUIs;
 
   }),
 
@@ -65,10 +97,12 @@ let meshTree = {
   *   `0` - abstract only
   *   `1` - all text
   */
-  getWikipediaEntryByDescUI: co.wrap(function* (args) {
+  getWikipediaEntryByDescUI: co.wrap(function* (opts) {
 
-    const descUI = args[0].descUI;
-    const level = args[0].level;
+    if (_.isArray(opts)) opts = opts[0];
+
+    const descUI = opts.descUI;
+    const level = opts.level;
 
     let concept = yield this.getPreferredTermByDescUI(descUI);
     let wiki = yield wikipedia.getMainSections(concept.replace(/ /g, '+'));
