@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
 cat $1 | grep \
--e '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.nlm.nih.gov/mesh/vocab#SCR_Chemical>' \
 -e '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.nlm.nih.gov/mesh/vocab#TopicalDescriptor>' \
+-e '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.nlm.nih.gov/mesh/vocab#SCR_Chemical>' \
+-e '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.nlm.nih.gov/mesh/vocab#SCR_Disease>' \
+-e '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.nlm.nih.gov/mesh/vocab#SCR_Protocol>' \
 -e 'http://id.nlm.nih.gov/mesh/A01.456.505.420' \
 -e 'http://id.nlm.nih.gov/mesh/A17.360' \
 -e 'http://id.nlm.nih.gov/mesh/C04' \
