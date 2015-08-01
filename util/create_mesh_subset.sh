@@ -7,7 +7,9 @@ cat $1 | grep \
 -e '<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://id.nlm.nih.gov/mesh/vocab#SCR_Protocol>' \
 -e 'http://id.nlm.nih.gov/mesh/A01.456.505.420' \
 -e 'http://id.nlm.nih.gov/mesh/A17.360' \
+-e 'http://id.nlm.nih.gov/mesh/C025735' \
 -e 'http://id.nlm.nih.gov/mesh/C04' \
+-e 'http://id.nlm.nih.gov/mesh/C041293' \
 -e 'http://id.nlm.nih.gov/mesh/C09.218.568' \
 -e 'http://id.nlm.nih.gov/mesh/D000001' \
 -e 'http://id.nlm.nih.gov/mesh/D000926' \
@@ -18,6 +20,7 @@ cat $1 | grep \
 -e 'http://id.nlm.nih.gov/mesh/D007759' \
 -e 'http://id.nlm.nih.gov/mesh/D007762' \
 -e 'http://id.nlm.nih.gov/mesh/D009369' \
+-e 'http://id.nlm.nih.gov/mesh/D011434' \
 -e 'http://id.nlm.nih.gov/mesh/D012343' \
 -e 'http://id.nlm.nih.gov/mesh/D012345' \
 -e 'http://id.nlm.nih.gov/mesh/D012346' \
