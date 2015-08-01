@@ -374,6 +374,24 @@ let meshTree = {
   }),
 
   /*
+  * Returns parent descriptor record UIs mapped from supplementary concept record UI
+  *
+  * Example: 'C025735' returns ['D001286', 'D002164', 'D012602']
+  */
+  getParentDescUIsForSCR: co.wrap(function* (scrUI) {
+
+    let result = yield dbSearch({
+      subject: MESH + scrUI,
+      predicate: MESHV + 'preferredMappedTo',
+      object: db.v('descUI')
+    }, {});
+
+    // get rid of descriptor qualifiers as well
+    return _.unique(result.map(res => res['descUI'].replace(MESH, '').replace(/Q\d+/g, '')));
+
+  }),
+
+  /*
   * Returns ancestor descriptor records UIs
   * (returns an array)
   *

@@ -184,6 +184,13 @@ Returns parent descriptor records UIs (returns an array as records can exist in 
 Example: `'D000001'` returns `['D001583']`
 Example: `'D005138'` returns `['D006197', 'D005123']`
 
+#### getParentDescUIsForSCR (scrUI)
+
+Returns parent descriptor record UIs mapped from supplementary concept record UI
+
+Example: `'C041293'` returns `['D011140']`
+Example: `'C025735'` returns `['D001286', 'D002164', 'D012602']`
+
 #### getAncestorDescUIsForDescUI (descUI)
 
 Returns all ancestor descriptor records UIs, following all parent branches. Returns an array.
