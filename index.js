@@ -363,24 +363,13 @@ let meshTree = {
 
     let parentDescUIs = [];
 
-    let treeNums = yield this.getTreeNumbersByDescUI(descUI);
+    let result = yield dbSearch({
+      subject: MESH + descUI,
+      predicate: MESHV + 'broaderDescriptor',
+      object: db.v('descUI')
+    }, {});
 
-    for (let treeNum of treeNums) {
-
-      let result = yield dbSearch({
-        subject: MESH + treeNum,
-        predicate: MESHV + 'parentTreeNumber',
-        object: db.v('treeNum')
-      }, {});
-
-      if (!_.isEmpty(result)) {
-        let ui = yield this.getDescUIByTreeNumber(result[0]['treeNum'].replace(MESH, ''));
-        parentDescUIs.push(ui);
-      }
-
-    }
-
-    return _.unique(parentDescUIs);
+    return _.unique(result.map(res => res['descUI'].replace(MESH, '')));
 
   }),
 
