@@ -1,7 +1,10 @@
 .git
 .gitignore
+.eslintrc
 .travis.yml
 coverage/
+data/
 db/
 dbtest/
+src/
 test/

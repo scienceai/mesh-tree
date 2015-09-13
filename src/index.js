@@ -15,13 +15,13 @@ if (process.env['NODE_ENV'] === 'test') {
 let db = levelgraphN3(levelgraph(level(dbPath)));
 let dbSearch = Bluebird.promisify(db.search);
 
-let wikipedia = require('./lib/wikipedia')
-  , permutations = require('./lib/permutations');
+let wikipedia = require('../lib/wikipedia')
+  , permutations = require('../lib/permutations');
 
 const MESH = 'http://id.nlm.nih.gov/mesh/';
 const MESHV = 'http://id.nlm.nih.gov/mesh/vocab#';
 const RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
-const RDFS = 'http://www.w3.org/2000/01/rdf-schema#';
+//const RDFS = 'http://www.w3.org/2000/01/rdf-schema#';
 
 let meshTree = {
 
@@ -361,8 +361,6 @@ let meshTree = {
   */
   getParentDescUIsForDescUI: co.wrap(function* (descUI) {
 
-    let parentDescUIs = [];
-
     let result = yield dbSearch({
       subject: MESH + descUI,
       predicate: MESHV + 'broaderDescriptor',
@@ -415,7 +413,7 @@ let meshTree = {
       }
 
       nodes = nodesTemp;
-      hasParents = nodesTemp.length > 0
+      hasParents = nodesTemp.length > 0;
     }
 
     return _.unique(parents);
@@ -488,7 +486,7 @@ let meshTree = {
   */
   getCommonAncestorsForDescUIs: co.wrap(function* (descUIArray) {
 
-    if (!_.isArray(descUIArray)) raise('input not an array.');
+    if (!_.isArray(descUIArray)) throw new Error('input not an array.');
 
     let commonAncestorsDescUIs = [];
     let commonAncestorsTreeNums = [];
@@ -568,7 +566,7 @@ let meshTree = {
     while (hasParents) {
       let nodesTemp = [];
 
-      for (let node of nodes) {;
+      for (let node of nodes) {
         let parentsTemp = yield this.getParentDescUIsForDescUI(node);
 
         _.each(parentsTemp, (p) => {
@@ -578,7 +576,7 @@ let meshTree = {
       }
 
       nodes = nodesTemp;
-      hasParents = nodes.length > 0
+      hasParents = nodes.length > 0;
     }
 
     return _.includes(parentsAll, descUI1);
@@ -592,7 +590,7 @@ let meshTree = {
   clusterDescUIs: co.wrap(function* (descUIArray) {
 
     // input must be array
-    if (!_.isArray(descUIArray)) raise('input not an array.');
+    if (!_.isArray(descUIArray)) throw new Error('input not an array.');
 
     // create array of parent-child relationship objects
     let relationships = [];
@@ -621,7 +619,7 @@ let meshTree = {
         }
 
         nodes = nodesTemp;
-        hasParents = nodesTemp.length > 0
+        hasParents = nodesTemp.length > 0;
       }
 
       if (parents.length === 0) {
@@ -648,10 +646,10 @@ let meshTree = {
     function treeCluster(relationsList, parent, tree) {
 
       if (typeof tree === 'undefined') {
-        var tree = [];
+        tree = [];
       }
       if (typeof parent === 'undefined') {
-        var parent = { 'descUI': null, 'parent': null };
+        parent = { 'descUI': null, 'parent': null };
       }
 
       let children = _.filter(relationsList, (child) => {
