@@ -585,12 +585,14 @@ let meshTree = {
 
 
   /*
-  * Creates a subtree from a flat list of descriptor record UIs based on parent-child relationships within the MeSH ontology tree.
+  * Creates a subtree from a flat list of descriptor record UIs (as `@id`s) based on parent-child relationships within the MeSH ontology tree.
   */
-  clusterDescUIs: co.wrap(function* (descUIArray) {
+  clusterDescUIs: co.wrap(function* (idArray) {
 
     // input must be array
-    if (!_.isArray(descUIArray)) throw new Error('input not an array.');
+    if (!_.isArray(idArray)) throw new Error('input not an array.');
+
+    let descUIArray = idArray.map(id => id.replace(MESH, ''));
 
     // create array of parent-child relationship objects
     let relationships = [];
@@ -625,7 +627,7 @@ let meshTree = {
       if (parents.length === 0) {
 
         relationships.push({
-          'descUI': descUI,
+          '@id': MESH + descUI,
           'parent': null
         });
 
@@ -633,8 +635,8 @@ let meshTree = {
 
         _.each(parents, (parent) => {
           relationships.push({
-            'descUI': descUI,
-            'parent': parent
+            '@id': MESH + descUI,
+            'parent': MESH + parent
           });
         });
 
@@ -649,15 +651,15 @@ let meshTree = {
         tree = [];
       }
       if (typeof parent === 'undefined') {
-        parent = { 'descUI': null, 'parent': null };
+        parent = { '@id': null, 'parent': null };
       }
 
       let children = _.filter(relationsList, (child) => {
-        return child.parent === parent.descUI;
+        return child.parent === parent['@id'];
       });
 
       if (!_.isEmpty(children)) {
-        if (_.isNull(parent.descUI)) {
+        if (_.isNull(parent['@id'])) {
           tree = children;
         } else {
           parent['children'] = children;

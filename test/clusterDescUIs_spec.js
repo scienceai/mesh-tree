@@ -6,16 +6,16 @@ describe('cluster a list of descriptor record UIs based on the ontology tree', f
 
     var resultExpected = [
       {
-        "descUI": "D012343",
+        "@id": "http://id.nlm.nih.gov/mesh/D012343",
         "parent": null,
         "children": [
           {
-            "descUI": "D012345",
-            "parent": "D012343"
+            "@id": "http://id.nlm.nih.gov/mesh/D012345",
+            "parent": "http://id.nlm.nih.gov/mesh/D012343"
           },
           {
-            "descUI": "D000926",
-            "parent": "D012343"
+            "@id": "http://id.nlm.nih.gov/mesh/D000926",
+            "parent": "http://id.nlm.nih.gov/mesh/D012343"
           }
         ]
       }
@@ -23,7 +23,7 @@ describe('cluster a list of descriptor record UIs based on the ontology tree', f
 
     it('should return the correct nested tree structure of parent-child relationships', function (done) {
 
-      meshTree.clusterDescUIs(['D012345', 'D000926', 'D012343']).then(function (result) {
+      meshTree.clusterDescUIs(['http://id.nlm.nih.gov/mesh/D012345', 'http://id.nlm.nih.gov/mesh/D000926', 'http://id.nlm.nih.gov/mesh/D012343']).then(function (result) {
         console.log(JSON.stringify(result, null, 2));
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
@@ -35,20 +35,20 @@ describe('cluster a list of descriptor record UIs based on the ontology tree', f
 
     var resultExpected = [
       {
-        "descUI": "D013517",
+        "@id": "http://id.nlm.nih.gov/mesh/D013517",
         "parent": null,
         "children": [
           {
-            "descUI": "D000233",
-            "parent": "D013517"
+            "@id": "http://id.nlm.nih.gov/mesh/D000233",
+            "parent": "http://id.nlm.nih.gov/mesh/D013517"
           },
           {
-            "descUI": "D014068",
-            "parent": "D013517"
+            "@id": "http://id.nlm.nih.gov/mesh/D014068",
+            "parent": "http://id.nlm.nih.gov/mesh/D013517"
           },
           {
-            "descUI": "D007828",
-            "parent": "D013517"
+            "@id": "http://id.nlm.nih.gov/mesh/D007828",
+            "parent": "http://id.nlm.nih.gov/mesh/D013517"
           }
         ]
       }
@@ -56,7 +56,7 @@ describe('cluster a list of descriptor record UIs based on the ontology tree', f
 
     it('should return the correct nested tree structure of parent-child relationships', function (done) {
 
-      meshTree.clusterDescUIs(['D000233', 'D014068', 'D007828', 'D013517']).then(function (result) {
+      meshTree.clusterDescUIs(['http://id.nlm.nih.gov/mesh/D000233', 'http://id.nlm.nih.gov/mesh/D014068', 'http://id.nlm.nih.gov/mesh/D007828', 'http://id.nlm.nih.gov/mesh/D013517']).then(function (result) {
         console.log(JSON.stringify(result, null, 2));
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
@@ -68,24 +68,24 @@ describe('cluster a list of descriptor record UIs based on the ontology tree', f
 
     var resultExpected = [
       {
-        "descUI": "D011434",
+        "@id": "http://id.nlm.nih.gov/mesh/D011434",
         "parent": null,
         "children": [
           {
-            "descUI": "D004856",
-            "parent": "D011434"
+            "@id": "http://id.nlm.nih.gov/mesh/D004856",
+            "parent": "http://id.nlm.nih.gov/mesh/D011434"
           }
         ]
       },
       {
-        "descUI": "D014785",
+        "@id": "http://id.nlm.nih.gov/mesh/D014785",
         "parent": null
       }
     ];
 
     it('should return the correct nested tree structure of parent-child relationships', function (done) {
 
-      meshTree.clusterDescUIs(['D011434', 'D014785', 'D004856']).then(function (result) {
+      meshTree.clusterDescUIs(['http://id.nlm.nih.gov/mesh/D011434', 'http://id.nlm.nih.gov/mesh/D014785', 'http://id.nlm.nih.gov/mesh/D004856']).then(function (result) {
         console.log(JSON.stringify(result, null, 2));
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
