@@ -1,9 +1,9 @@
 # mesh-tree
 
-[![Build Status](https://travis-ci.org/standard-analytics/mesh-tree.svg)](https://travis-ci.org/standard-analytics/mesh-tree)
-[![Coverage Status](https://coveralls.io/repos/standard-analytics/mesh-tree/badge.svg?branch=master)](https://coveralls.io/r/standard-analytics/mesh-tree?branch=master)
-[![Dependency Status](https://david-dm.org/standard-analytics/mesh-tree.svg)](https://david-dm.org/standard-analytics/mesh-tree)
-[![devDependency Status](https://david-dm.org/standard-analytics/mesh-tree/dev-status.svg)](https://david-dm.org/standard-analytics/mesh-tree#info=devDependencies)
+[![Build Status](https://travis-ci.org/scienceai/mesh-tree.svg)](https://travis-ci.org/scienceai/mesh-tree)
+[![Coverage Status](https://coveralls.io/repos/scienceai/mesh-tree/badge.svg?branch=master)](https://coveralls.io/r/scienceai/mesh-tree?branch=master)
+[![Dependency Status](https://david-dm.org/scienceai/mesh-tree.svg)](https://david-dm.org/scienceai/mesh-tree)
+[![devDependency Status](https://david-dm.org/scienceai/mesh-tree/dev-status.svg)](https://david-dm.org/scienceai/mesh-tree#info=devDependencies)
 
 Utility functions for traversing the Medical Subject Heading (MeSH) ontology tree
 ___
