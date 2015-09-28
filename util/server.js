@@ -2,7 +2,7 @@
 
 require("babel/register");
 
-var meshTreeFuncs = require('../index.js')
+var meshTreeFuncs = require('../src/index.js')
   , co = require('co')
   , zmq = require('zmq')
   , prettyjson = require('prettyjson');

@@ -169,7 +169,7 @@ Example: `'D000001'` returns `['A23187, Antibiotic', 'Antibiotic A23187', 'A2318
 
 Can also use chemical supplementary concept records UIs here as well:
 
-Example: `'D000001'` returns `['CH-A1-MG', 'alpha 1 microglobulin, chorionic', 'chorionic alpha 1-microglobulin', 'chorionic alpha(1)-microglobulin']`
+Example: `'C025734'` returns `['CH-A1-MG', 'alpha 1 microglobulin, chorionic', 'chorionic alpha 1-microglobulin', 'chorionic alpha(1)-microglobulin']`
 
 #### getScopeNoteByDescUI (descUI)
 
@@ -233,20 +233,20 @@ For example, given `D000233 (Adenoidectomy), D014068 (Tonsillectomy), D007828 (L
 ```
 [
   {
-    "descUI": "D013517",
+    "@id": "http://id.nlm.nih.gov/mesh/D013517",
     "parent": null,
     "children": [
       {
-        "descUI": "D000233",
-        "parent": "D013517"
+        "@id": "http://id.nlm.nih.gov/mesh/D000233",
+        "parent": "http://id.nlm.nih.gov/mesh/D013517"
       },
       {
-        "descUI": "D014068",
-        "parent": "D013517"
+        "@id": "http://id.nlm.nih.gov/mesh/D014068",
+        "parent": "http://id.nlm.nih.gov/mesh/D013517"
       },
       {
-        "descUI": "D007828",
-        "parent": "D013517"
+        "@id": "http://id.nlm.nih.gov/mesh/D007828",
+        "parent": "http://id.nlm.nih.gov/mesh/D013517"
       }
     ]
   }
@@ -258,18 +258,24 @@ An example for a list containing more than one "relative top-level" element, suc
 ```
 [
   {
-    "descUI": "D011434",
+    "@id": "http://id.nlm.nih.gov/mesh/D011434",
     "parent": null,
     "children": [
       {
-        "descUI": "D004856",
-        "parent": "D011434"
+        "@id": "http://id.nlm.nih.gov/mesh/D004856",
+        "parent": "http://id.nlm.nih.gov/mesh/D011434"
       }
     ]
   },
   {
-    "descUI": "D014785",
+    "@id": "http://id.nlm.nih.gov/mesh/D014785",
     "parent": null
   }
 ]
 ```
+
+#### getPharmacologicalAction (descUI)
+
+Tests whether a descriptor has pharmacological actions (in other words, if the descriptor is a drug). If true, returns array of descUI mappings of the pharmacological action, otherwise returns null.
+
+Example: `'D000001' (Calcimycin)` returns `['D000900', 'D061207'] (Anti-Bacterial Agents, Calcium Ionophores)`

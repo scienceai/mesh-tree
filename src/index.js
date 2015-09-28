@@ -21,7 +21,7 @@ let wikipedia = require('../lib/wikipedia')
 const MESH = 'http://id.nlm.nih.gov/mesh/';
 const MESHV = 'http://id.nlm.nih.gov/mesh/vocab#';
 const RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
-//const RDFS = 'http://www.w3.org/2000/01/rdf-schema#';
+const RDFS = 'http://www.w3.org/2000/01/rdf-schema#';
 
 let meshTree = {
 
@@ -674,6 +674,26 @@ let meshTree = {
     }
 
     return treeCluster(relationships);
+
+  }),
+
+  /*
+  * Tests whether a descriptor has pharmacological actions (in other words, if the descriptor is a drug).
+  * If true, returns array of descUI mappings of the pharmacological action, otherwise returns null.
+  */
+  getPharmacologicalAction: co.wrap(function* (ui) {
+
+    let result = yield dbSearch({
+      subject: MESH + ui,
+      predicate: MESHV + 'pharmacologicalAction',
+      object: db.v('descUI')
+    }, {});
+
+    if (_.isEmpty(result)) {
+      return null;
+    } else {
+      return _.unique(result.map(res => res['descUI'].replace(MESH, '')));
+    }
 
   })
 
