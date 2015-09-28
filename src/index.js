@@ -695,6 +695,69 @@ let meshTree = {
       return _.unique(result.map(res => res['descUI'].replace(MESH, '')));
     }
 
+  }),
+
+  /*
+   * Performs mapping of MeSH concepts onto Schema.org classes
+   */
+  getSchemaOrgTypes: co.wrap(function* (ui) {
+    let schemaOrgTypes = [];
+
+    let pharmActions = yield this.getPharmacologicalAction(ui);
+    if (pharmActions) {
+      schemaOrgTypes.push('Drug');
+    }
+
+    return schemaOrgTypes;
+  }),
+
+  /*
+  * Creates properties object from descriptor id
+  */
+  createPropertiesObject: co.wrap(function* (propRequestObj) {
+    let id = propRequestObj['@id'];
+    let properties = propRequestObj.properties;
+    let ui = id.replace(MESH, '');
+
+    let propertiesObj = {
+      '@id': id
+    };
+
+    for (let property of properties) {
+      let preferredTerm;
+      switch (property) {
+        case 'name':
+          preferredTerm = yield this.getPreferredTermByDescUI(ui);
+          propertiesObj[property] = preferredTerm;
+          break;
+        case 'description':
+          let scopeNotes = yield this.getScopeNoteByDescUI(ui);
+          propertiesObj[property] = scopeNotes;
+          break;
+        case 'synonyms':
+          preferredTerm = yield this.getPreferredTermByDescUI(ui);
+          let synonyms = yield this.getAllTermsByDescUI(ui);
+          let preferredTermIndex = synonyms.indexOf(preferredTerm);
+          if (~preferredTermIndex) synonyms.splice(preferredTermIndex, 1);
+          propertiesObj[property] = synonyms;
+          break;
+        case 'schemaOrgTypes':
+          let schemaOrgTypes = yield this.getSchemaOrgTypes(ui);
+          propertiesObj[property] = schemaOrgTypes;
+          break;
+        case 'codeValue':
+          propertiesObj[property] = ui;
+          break;
+        case 'codingSystem':
+          propertiesObj[property] = 'MeSH';
+          break;
+        default:
+          propertiesObj[property] = null;
+      }
+    }
+
+    return propertiesObj;
+
   })
 
 

@@ -279,3 +279,34 @@ An example for a list containing more than one "relative top-level" element, suc
 Tests whether a descriptor has pharmacological actions (in other words, if the descriptor is a drug). If true, returns array of descUI mappings of the pharmacological action, otherwise returns null.
 
 Example: `'D000001' (Calcimycin)` returns `['D000900', 'D061207'] (Anti-Bacterial Agents, Calcium Ionophores)`
+
+#### getSchemaOrgTypes (ui)
+
+Performs mapping of MeSH concepts onto Schema.org classes (e.g., Drug)
+
+#### createPropertiesObject (propRequestObj)
+
+Creates properties object from descriptor id.
+
+Example `propRequestObj`:
+
+```
+{
+  '@id': 'http://id.nlm.nih.gov/mesh/D000001',
+  properties: ['name', 'description', 'synonyms', 'schemaOrgTypes', 'codeValue', 'codingSystem']
+}
+```
+
+returns
+
+```
+{
+  '@id': 'http://id.nlm.nih.gov/mesh/D000001',
+  'name': 'Calcimycin',
+  'description': 'An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems.',
+  'synonyms': ['A23187, Antibiotic', 'Antibiotic A23187', 'A23187', 'A 23187', 'A-23187'],
+  'schemaOrgTypes': ['Drug'],
+  'codeValue': 'D000001',
+  'codingSystem': 'MeSH'
+}
+```
