@@ -700,15 +700,17 @@ let meshTree = {
   /*
    * Performs mapping of MeSH concepts onto Schema.org classes
    */
-  getSchemaOrgTypes: co.wrap(function* (ui) {
-    let schemaOrgTypes = [];
+  getSchemaOrgType: co.wrap(function* (ui) {
+    let schemaOrgType;
 
     let pharmActions = yield this.getPharmacologicalAction(ui);
     if (pharmActions) {
-      schemaOrgTypes.push('Drug');
+      schemaOrgType = 'Drug';
+    } else {
+      schemaOrgType = 'MedicalEntity';
     }
 
-    return schemaOrgTypes;
+    return schemaOrgType;
   }),
 
   /*
@@ -741,9 +743,9 @@ let meshTree = {
           if (~preferredTermIndex) synonyms.splice(preferredTermIndex, 1);
           propertiesObj[property] = synonyms;
           break;
-        case 'schemaOrgTypes':
-          let schemaOrgTypes = yield this.getSchemaOrgTypes(ui);
-          propertiesObj[property] = schemaOrgTypes;
+        case 'schemaOrgType':
+          let schemaOrgType = yield this.getSchemaOrgType(ui);
+          propertiesObj[property] = schemaOrgType;
           break;
         case 'codeValue':
           propertiesObj[property] = ui;
