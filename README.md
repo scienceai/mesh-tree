@@ -2,15 +2,13 @@
 
 [![Build Status](https://travis-ci.org/scienceai/mesh-tree.svg)](https://travis-ci.org/scienceai/mesh-tree)
 [![Coverage Status](https://coveralls.io/repos/scienceai/mesh-tree/badge.svg?branch=master)](https://coveralls.io/r/scienceai/mesh-tree?branch=master)
-[![Dependency Status](https://david-dm.org/scienceai/mesh-tree.svg)](https://david-dm.org/scienceai/mesh-tree)
-[![devDependency Status](https://david-dm.org/scienceai/mesh-tree/dev-status.svg)](https://david-dm.org/scienceai/mesh-tree#info=devDependencies)
+[![npm](https://img.shields.io/npm/v/mesh-tree.svg)](https://www.npmjs.com/package/mesh-tree)
 
 Utility functions for traversing the Medical Subject Heading (MeSH) ontology tree
-___
 
-## MeSH
+#### MeSH
 
-Medical Subject Headings is an ontology for biomedical sciences.
+Medical Subject Headings (MeSH) is an ontology for classifying information within the biomedical domain.
 
 <img src="./extras/count_over_time.png">
 
@@ -293,7 +291,7 @@ Example `propRequestObj`:
 ```
 {
   '@id': 'http://id.nlm.nih.gov/mesh/D000001',
-  properties: ['name', 'description', 'synonyms', 'schemaOrgTypes', 'codeValue', 'codingSystem']
+  properties: ['name', 'description', 'synonyms', 'schemaOrgType', 'codeValue', 'codingSystem']
 }
 ```
 
@@ -305,7 +303,7 @@ returns
   'name': 'Calcimycin',
   'description': 'An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems.',
   'synonyms': ['A23187, Antibiotic', 'Antibiotic A23187', 'A23187', 'A 23187', 'A-23187'],
-  'schemaOrgTypes': ['Drug'],
+  'schemaOrgType': 'Drug',
   'codeValue': 'D000001',
   'codingSystem': 'MeSH'
 }
