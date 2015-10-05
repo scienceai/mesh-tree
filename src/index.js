@@ -701,13 +701,44 @@ let meshTree = {
    * Performs mapping of MeSH concepts onto Schema.org classes
    */
   getSchemaOrgType: co.wrap(function* (ui) {
-    let schemaOrgType;
+    let schemaOrgType = 'MedicalEntity';
 
     let pharmActions = yield this.getPharmacologicalAction(ui);
     if (pharmActions) {
       schemaOrgType = 'Drug';
-    } else {
-      schemaOrgType = 'MedicalEntity';
+    }
+
+    let treeNums = yield this.getTreeNumbersByDescUI(ui);
+    if (treeNums.some(tn => /^C\d+/.test(tn))) {
+      schemaOrgType = 'MedicalCondition';
+      if (treeNums.some(tn => /^(C01|C02|C03)\./.test(tn))) {
+        schemaOrgType = 'InfectiousDisease';
+      } else if (treeNums.some(tn => /^C23\./.test(tn))) {
+        schemaOrgType = 'MedicalSignOrSymptom';
+      }
+    } else if (treeNums.some(tn => /^E07\.(101|132|190|222|230|278|315|325|430|505|515|605|652|695|814|858|862|877|913|926|935|950)\./.test(tn))) {
+      schemaOrgType = 'MedicalDevice';
+    } else if (treeNums.some(tn => /^E01\.370\./.test(tn))) {
+      schemaOrgType = 'MedicalTest';
+      if (treeNums.some(tn => /^E01\.370\.(100|370.050|372.250|372.255|372.310|376.300|376.525|376.700|378.150|378.155|378.330|386.105|386.460|386.700|388.100|388.250|390.800|405|530)/.test(tn))) {
+        schemaOrgType = 'DiagnosticProcedure';
+      } else if (treeNums.some(tn => /^E01\.370\.(049|350)/.test(tn))) {
+        schemaOrgType = 'ImagingTest';
+      }
+      // skipping BloodTest and PathologyTest mapping for now as these are somewhat ambiguous
+    } else if (treeNums.some(tn => /^E02\./.test(tn))) {
+      schemaOrgType = 'MedicalTherapy';
+      if (treeNums.some(tn => /^E02\.815\./.test(tn))) {
+        schemaOrgType = 'RadiationTherapy';
+      } else if (treeNums.some(tn => /^E02\.779\./.test(tn))) {
+        schemaOrgType = 'PhysicalTherapy';
+      } else if (treeNums.some(tn => /^E02\.(037|065|120|148|154|218|258|278|309|342|365|393|467|514|520|533|565|583|585|594|596|600|621|631|706|718|730|774|794|800|831|870|875|880|891|912|926|950|960)/.test(tn))) {
+        schemaOrgType = 'TherapeuticProcedure';
+      }
+    } else if (treeNums.some(tn => /^(E03|E04)/.test(tn))) {
+      schemaOrgType = 'MedicalProcedure';
+    } else if (treeNums.some(tn => /^F04\.754\./.test(tn))) {
+      schemaOrgType = 'PsychologicalTreatment';
     }
 
     return schemaOrgType;
