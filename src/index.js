@@ -784,10 +784,6 @@ let meshTree = {
         case 'codingSystem':
           propertiesObj[property] = 'MeSH';
           break;
-        case 'hasChildren':
-          let children = yield this.getChildrenDescUIsForDescUI(ui);
-          propertiesObj[property] = !!children.length;
-          break;
         default:
           propertiesObj[property] = null;
       }
