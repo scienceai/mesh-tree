@@ -8,14 +8,17 @@ describe('cluster a list of descriptor record UIs based on the ontology tree', f
       {
         "@id": "http://id.nlm.nih.gov/mesh/D012343",
         "parent": null,
+        "mostSpecificConcept": false,
         "children": [
           {
             "@id": "http://id.nlm.nih.gov/mesh/D012345",
-            "parent": "http://id.nlm.nih.gov/mesh/D012343"
+            "parent": "http://id.nlm.nih.gov/mesh/D012343",
+            "mostSpecificConcept": false
           },
           {
             "@id": "http://id.nlm.nih.gov/mesh/D000926",
-            "parent": "http://id.nlm.nih.gov/mesh/D012343"
+            "parent": "http://id.nlm.nih.gov/mesh/D012343",
+            "mostSpecificConcept": true
           }
         ]
       }
@@ -37,18 +40,22 @@ describe('cluster a list of descriptor record UIs based on the ontology tree', f
       {
         "@id": "http://id.nlm.nih.gov/mesh/D013517",
         "parent": null,
+        "mostSpecificConcept": false,
         "children": [
           {
             "@id": "http://id.nlm.nih.gov/mesh/D000233",
-            "parent": "http://id.nlm.nih.gov/mesh/D013517"
+            "parent": "http://id.nlm.nih.gov/mesh/D013517",
+            "mostSpecificConcept": true
           },
           {
             "@id": "http://id.nlm.nih.gov/mesh/D014068",
-            "parent": "http://id.nlm.nih.gov/mesh/D013517"
+            "parent": "http://id.nlm.nih.gov/mesh/D013517",
+            "mostSpecificConcept": true
           },
           {
             "@id": "http://id.nlm.nih.gov/mesh/D007828",
-            "parent": "http://id.nlm.nih.gov/mesh/D013517"
+            "parent": "http://id.nlm.nih.gov/mesh/D013517",
+            "mostSpecificConcept": true
           }
         ]
       }
@@ -70,16 +77,19 @@ describe('cluster a list of descriptor record UIs based on the ontology tree', f
       {
         "@id": "http://id.nlm.nih.gov/mesh/D011434",
         "parent": null,
+        "mostSpecificConcept": false,
         "children": [
           {
             "@id": "http://id.nlm.nih.gov/mesh/D004856",
-            "parent": "http://id.nlm.nih.gov/mesh/D011434"
+            "parent": "http://id.nlm.nih.gov/mesh/D011434",
+            "mostSpecificConcept": true
           }
         ]
       },
       {
         "@id": "http://id.nlm.nih.gov/mesh/D014785",
-        "parent": null
+        "parent": null,
+        "mostSpecificConcept": false
       }
     ];
 

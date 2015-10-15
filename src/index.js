@@ -594,6 +594,13 @@ let meshTree = {
 
     let descUIArray = idArray.map(id => id.replace(MESH, ''));
 
+    // booleans whether a concept can have potential children (i.e., not the most specific concept)
+    let mostSpecificConcept = {};
+    for (let descUI of descUIArray) {
+      let children = yield this.getChildrenDescUIsForDescUI(descUI);
+      mostSpecificConcept[descUI] = !children || !children.length;
+    }
+
     // create array of parent-child relationship objects
     let relationships = [];
 
@@ -628,7 +635,8 @@ let meshTree = {
 
         relationships.push({
           '@id': MESH + descUI,
-          'parent': null
+          'parent': null,
+          'mostSpecificConcept': mostSpecificConcept[descUI]
         });
 
       } else {
@@ -636,7 +644,8 @@ let meshTree = {
         _.each(parents, (parent) => {
           relationships.push({
             '@id': MESH + descUI,
-            'parent': MESH + parent
+            'parent': MESH + parent,
+            'mostSpecificConcept': mostSpecificConcept[descUI]
           });
         });
 
