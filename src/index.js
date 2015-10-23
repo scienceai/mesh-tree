@@ -1,11 +1,11 @@
-'use strict';
-
-let levelgraph = require('levelgraph')
-  , level = require('level')
-  , levelgraphN3 = require('levelgraph-n3')
-  , _ = require('lodash')
-  , Bluebird = require('bluebird')
-  , co = require('co');
+import levelgraph from 'levelgraph';
+import level from 'level';
+import levelgraphN3 from 'levelgraph-n3';
+import _ from 'lodash';
+import Bluebird from 'bluebird';
+import co from 'co';
+import * as wikipedia from './lib/wikipedia';
+import permutations from './lib/permutations';
 
 let dbPath = process.env['PATH_TO_MESH_DB'];
 if (process.env['NODE_ENV'] === 'test') {
@@ -14,9 +14,6 @@ if (process.env['NODE_ENV'] === 'test') {
 
 let db = levelgraphN3(levelgraph(level(dbPath)));
 let dbSearch = Bluebird.promisify(db.search);
-
-let wikipedia = require('../lib/wikipedia')
-  , permutations = require('../lib/permutations');
 
 const MESH = 'http://id.nlm.nih.gov/mesh/';
 const MESHV = 'http://id.nlm.nih.gov/mesh/vocab#';
