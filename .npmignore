@@ -2,6 +2,7 @@
 .gitignore
 .eslintrc
 .travis.yml
+bin/
 coverage/
 data/
 db/
