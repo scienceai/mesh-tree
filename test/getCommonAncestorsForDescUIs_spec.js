@@ -9,8 +9,8 @@ describe('get common ancestor of descriptor record UIs', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 
   describe('D000233 (Adenoidectomy), D014068 (Tonsillectomy), D007828 (Laryngoscopy)', function () {
     var resultExpected = ['D013517'];
@@ -19,8 +19,8 @@ describe('get common ancestor of descriptor record UIs', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 
   describe('D011434 (Proprioception), D014785 (Vision, Ocular), D004856 (Postural Balance)', function () {
     var resultExpected = ['D012677'];
@@ -29,7 +29,7 @@ describe('get common ancestor of descriptor record UIs', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 
 });

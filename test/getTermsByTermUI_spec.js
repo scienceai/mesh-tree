@@ -8,8 +8,8 @@ describe('get all terms under a term UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
   describe('T365903', function () {
     var resultExpected = ['Microsomal Triglyceride Transfer Protein Deficiency Disease'];
     it('should return correct terms: ' + resultExpected.toString(), function (done) {
@@ -17,8 +17,8 @@ describe('get all terms under a term UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
   describe('T814292', function () {
     var resultExpected = ['Cotyloid Cavities', 'Cavity, Cotyloid', 'Cavities, Cotyloid', 'Cotyloid Cavity'];
     it('should return correct terms: ' + resultExpected.toString(), function (done) {
@@ -26,6 +26,6 @@ describe('get all terms under a term UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 });

@@ -9,8 +9,8 @@ describe('get scope note for descriptor UI', function () {
         assert.equal(result, resultExpected);
         done();
       });
-    })
-  })
+    });
+  });
   describe('D009369', function () {
     var resultExpected = 'New abnormal growth of tissue. Malignant neoplasms show a greater degree of anaplasia and have the properties of invasion and metastasis, compared to benign neoplasms.';
     var resultShow = resultExpected.length > 300 ? resultExpected.slice(0, 300) + ' ... ' : resultExpected;
@@ -19,8 +19,8 @@ describe('get scope note for descriptor UI', function () {
         assert.equal(result, resultExpected);
         done();
       });
-    })
-  })
+    });
+  });
   describe('D005138', function () {
     var resultExpected = 'Curved rows of HAIR located on the upper edges of the eye sockets.';
     var resultShow = resultExpected.length > 300 ? resultExpected.slice(0, 300) + ' ... ' : resultExpected;
@@ -29,6 +29,6 @@ describe('get scope note for descriptor UI', function () {
         assert.equal(result, resultExpected);
         done();
       });
-    })
-  })
+    });
+  });
 });

@@ -9,8 +9,8 @@ describe('get all terms by UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 
   describe('D009369', function () {
     var resultExpected = ['Cancers', 'Cancer', 'Benign Neoplasm', 'Neoplasm, Benign', 'Neoplasms, Benign', 'Benign Neoplasms', 'Tumor', 'Tumors', 'Neoplasia', 'Neoplasm', 'Neoplasms'];
@@ -19,8 +19,8 @@ describe('get all terms by UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 
   describe('D005138', function () {
     var resultExpected = ['Eyebrow', 'Eyebrows'];
@@ -29,8 +29,8 @@ describe('get all terms by UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 
   describe('C025735', function () {
     var resultExpected = ['Aeron'];
@@ -39,8 +39,8 @@ describe('get all terms by UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 
   describe('C025734', function () {
     var resultExpected = ['CH-A1-MG', 'alpha 1 microglobulin, chorionic', 'chorionic alpha 1-microglobulin', 'chorionic alpha(1)-microglobulin'];
@@ -49,7 +49,7 @@ describe('get all terms by UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 
 });

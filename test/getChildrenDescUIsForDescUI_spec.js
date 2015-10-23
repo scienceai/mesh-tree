@@ -8,8 +8,8 @@ describe('get children descriptor UIs for a descriptor UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
   describe('D000001', function () {
     var resultExpected = [];
     it('should return no children.', function (done) {
@@ -17,6 +17,6 @@ describe('get children descriptor UIs for a descriptor UI', function () {
         assert.strictEqual(result.length, 0);
         done();
       });
-    })
-  })
+    });
+  });
 });

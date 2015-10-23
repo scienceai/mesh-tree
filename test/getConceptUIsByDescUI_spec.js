@@ -8,8 +8,8 @@ describe('get all concept UIs contained by descriptor record UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
   describe('D009369', function () {
     var resultExpected = ['M0014584', 'M0014585', 'M0014586'];
     it('should return correct concept UIs: ' + resultExpected.toString(), function (done) {
@@ -17,8 +17,8 @@ describe('get all concept UIs contained by descriptor record UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
   describe('D005138', function () {
     var resultExpected = ['M0008101'];
     it('should return correct concept UIs: ' + resultExpected.toString(), function (done) {
@@ -26,6 +26,6 @@ describe('get all concept UIs contained by descriptor record UI', function () {
         assert.deepEqual(result, resultExpected);
         done();
       });
-    })
-  })
+    });
+  });
 });

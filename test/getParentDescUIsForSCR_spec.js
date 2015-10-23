@@ -8,8 +8,8 @@ describe('get parent descriptor UIs for a supplemental concept record  UI', func
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
   describe('C025735', function () {
     var resultExpected = ['D001286', 'D002164', 'D012602'];
     it('should return multiple parent desc UIs: ' + resultExpected.toString(), function (done) {
@@ -17,6 +17,6 @@ describe('get parent descriptor UIs for a supplemental concept record  UI', func
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 });

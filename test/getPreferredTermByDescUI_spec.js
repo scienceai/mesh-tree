@@ -8,8 +8,8 @@ describe('get record preferred term by UI', function () {
         assert.strictEqual(result, resultExpected);
         done();
       });
-    })
-  })
+    });
+  });
   describe('D009369', function () {
     var resultExpected = 'Neoplasms';
     it('should return: ' + resultExpected.toString(), function (done) {
@@ -17,8 +17,8 @@ describe('get record preferred term by UI', function () {
         assert.strictEqual(result, resultExpected);
         done();
       });
-    })
-  })
+    });
+  });
   describe('D005138', function () {
     var resultExpected = 'Eyebrows';
     it('should return: ' + resultExpected.toString(), function (done) {
@@ -26,6 +26,6 @@ describe('get record preferred term by UI', function () {
         assert.strictEqual(result, resultExpected);
         done();
       });
-    })
-  })
+    });
+  });
 });

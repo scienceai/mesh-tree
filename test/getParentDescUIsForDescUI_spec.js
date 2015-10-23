@@ -8,8 +8,8 @@ describe('get parent descriptor UIs for a descriptor UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
   describe('D009369', function () {
     var resultExpected = [];
     it('should return no desc UIs (top level): ' + resultExpected.toString(), function (done) {
@@ -17,8 +17,8 @@ describe('get parent descriptor UIs for a descriptor UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
   describe('D005138', function () {
     var resultExpected = ['D006197', 'D005123'];
     it('should return two parent desc UIs: ' + resultExpected.toString(), function (done) {
@@ -26,6 +26,6 @@ describe('get parent descriptor UIs for a descriptor UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 });

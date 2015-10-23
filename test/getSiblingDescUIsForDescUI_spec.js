@@ -9,7 +9,7 @@ describe('get sibling descriptor UIs for a descriptor UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 
 });

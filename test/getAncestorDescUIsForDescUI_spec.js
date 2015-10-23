@@ -8,6 +8,6 @@ describe('get ancestor descriptor UIs for a descriptor UI', function () {
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 });

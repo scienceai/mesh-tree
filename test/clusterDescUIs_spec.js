@@ -31,8 +31,8 @@ describe('cluster a list of descriptor record UIs based on the ontology tree', f
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 
   describe('D000233 (Adenoidectomy), D014068 (Tonsillectomy), D007828 (Laryngoscopy), D013517 (Otorhinolaryngologic Surgical Procedures)', function () {
 
@@ -68,8 +68,8 @@ describe('cluster a list of descriptor record UIs based on the ontology tree', f
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 
   describe('D011434 (Proprioception), D014785 (Vision, Ocular), D004856 (Postural Balance)', function () {
 
@@ -100,7 +100,7 @@ describe('cluster a list of descriptor record UIs based on the ontology tree', f
         assert.deepEqual(result.sort(), resultExpected.sort());
         done();
       });
-    })
-  })
+    });
+  });
 
 });
