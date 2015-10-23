@@ -1,11 +1,9 @@
-'use strict';
+import request from 'request';
+import Bluebird from 'bluebird';
 
-var request = require('request')
-  , Bluebird = require('bluebird');
+let requestPromise = Bluebird.promisify(request);
 
-var requestPromise = Bluebird.promisify(request);
-
-exports.getMainSections = function* (articleTitle) {
+export function* getMainSections(articleTitle) {
 
   let url = 'http://en.wikipedia.org/w/api.php?redirects=true&format=json&utf8=true&action=query&titles=' + articleTitle + '&prop=extracts&explaintext=true&exsectionformat=wiki&continue=';
 
@@ -33,33 +31,33 @@ exports.getMainSections = function* (articleTitle) {
   // Parse returned wikipedia API JSON
   function extractWikiJSON (wikijson) {
 
-    var obj = wikijson.query.pages[Object.keys(wikijson.query.pages)[0]];
+    let obj = wikijson.query.pages[Object.keys(wikijson.query.pages)[0]];
 
     if (!obj.hasOwnProperty('extract') || !obj.hasOwnProperty('title')) {
       return;
     }
 
-    var sections = []
+    let sections = []
       , wikiextract = wikijson.query.pages[Object.keys(wikijson.query.pages)[0]].extract
       , sectionTitlesNotIncluded = ['See also', 'References', 'Further reading', 'External links', 'Works cited', 'Cited texts']
       , cursorStart = 0
       , cursorEnd = wikiextract.indexOf('\n== ');
-      
+
     if (cursorEnd === -1) {
       cursorEnd = wikiextract.length;
     }
 
-    var level = 0
+    let level = 0
       , title = wikijson.query.pages[Object.keys(wikijson.query.pages)[0]].title
       , abstract = {sectionLevel: level, sectionTitle: title, sectionText: wikiextract.substring(cursorStart, cursorEnd).replace(/\n+/g, '')};
 
     sections.push(abstract);
 
-    var headingRE = /\n==+ (.*?) (==+)\n?/g
+    let headingRE = /\n==+ (.*?) (==+)\n?/g
       , headingRE_results = headingRE.exec(wikiextract)
       , text = ''
       , section = {};
-      
+
     while (cursorEnd !== wikiextract.length) {
       title = headingRE_results[1];
       level = headingRE_results[2].length - 1;
@@ -82,4 +80,4 @@ exports.getMainSections = function* (articleTitle) {
     return sections;
   }
 
-};
+}
