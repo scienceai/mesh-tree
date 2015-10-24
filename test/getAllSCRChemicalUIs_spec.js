@@ -1,11 +1,11 @@
 
 // getAllSCRChemicalUIs
 describe('get array of all chemical supplement record UIs', function () {
+  this.timeout(20 * 1000);
 
   var allChemUIs;
 
   before(function (done) {
-    this.timeout(60000);
     meshTree.getAllSCRChemicalUIs().then(function (result) {
       allChemUIs = result;
       done();
