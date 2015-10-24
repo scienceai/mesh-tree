@@ -18,16 +18,15 @@ Medical Subject Headings (MeSH) is an ontology for classifying information withi
 $ npm install mesh-tree --save
 ```
 
-Make sure environment variable to the MeSH levelgraph-n3 db is set (see the [Setup](https://github.com/scienceai/mesh-tree#setup) section below for setting up DB):
-
-```sh
-$ export PATH_TO_MESH_DB=/path/to/mesh/db
-```
-
 ```js
-import meshTree from 'mesh-tree';
+import MeshTree from 'mesh-tree';
 
-meshTree.getAllDescUIs().then(result => {
+let mt = new MeshTree({
+  dbPath: '/path/to/mesh/db',  // if omitted, will use env var $PATH_TO_MESH_DB
+  multi: true
+});
+
+mt.getAllDescUIs().then(result => {
   console.log(result);
 });
 ```
