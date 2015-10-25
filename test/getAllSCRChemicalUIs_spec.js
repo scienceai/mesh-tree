@@ -1,7 +1,7 @@
 
 // getAllSCRChemicalUIs
 describe('get array of all chemical supplement record UIs', function () {
-  this.timeout(20 * 1000);
+  this.timeout(120 * 1000);
 
   var allChemUIs;
 

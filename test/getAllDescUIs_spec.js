@@ -1,15 +1,17 @@
 
 // getAllDescUIs
 describe('get array of all descriptor UIs', function () {
+  this.timeout(30*1000);
 
   var allDescUIs;
 
   before(function (done) {
-    this.timeout(15000);
+    setTimeout(() => {
     meshTree.getAllDescUIs().then(function (result) {
       allDescUIs = result;
       done();
     });
+  },1000);
   });
 
   it('should return an array', function () {

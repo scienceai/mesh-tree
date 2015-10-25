@@ -1,7 +1,7 @@
 
 // clusterDescUIs
 describe('cluster a list of descriptor record UIs based on the ontology tree', function () {
-  this.timeout(10*1000);
+  this.timeout(30*1000);
 
   describe('D012345 (RNA, Transfer, Amino Acid-Specific), D000926 (Anticodon), D012343 (RNA, Transfer)', function () {
 
