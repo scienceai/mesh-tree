@@ -1,6 +1,8 @@
 
 // getWikipediaEntryByDescUI
 describe('get wikipedia text for descriptor UI', function () {
+  this.timeout(30*1000);
+  
   describe('D000001', function () {
     it('should return the wikipedia abstract for concept Calcimycin', function (done) {
       meshTree.getWikipediaEntryByDescUI([{descUI: 'D000001', level: 0}]).then(function (result) {

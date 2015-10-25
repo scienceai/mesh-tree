@@ -8,14 +8,15 @@ var multilevel = require('multilevel');
 var net = require('net');
 var level = require('level');
 
+var db = level('dbtest');
 net.createServer(function (con) {
-  con.pipe(multilevel.server(level('dbtest'))).pipe(con);
+  con.pipe(multilevel.server(db)).pipe(con);
 }).listen(7776);
 
-var db = multilevel.client();
+var db_client = multilevel.client();
 var con = net.connect(7776);
-con.pipe(db.createRpcStream()).pipe(con);
+con.pipe(db_client.createRpcStream()).pipe(con);
 
 global.meshTree = new MeshTree({
-  level: db
+  level: db_client
 });

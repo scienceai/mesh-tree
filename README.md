@@ -41,8 +41,9 @@ To use with multiple processes, pass in a [`multilevel`](https://github.com/juli
   import multilevel from 'multilevel';
   import net from 'net';
 
+  let db = level('/path/to/mesh/db');
   net.createServer(con => {
-    con.pipe(multilevel.server(level('/path/to/mesh/db'))).pipe(con);
+    con.pipe(multilevel.server(db)).pipe(con);
   }).listen(meshTreePort);
   ```
 
