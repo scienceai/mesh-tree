@@ -18,18 +18,53 @@ Medical Subject Headings (MeSH) is an ontology for classifying information withi
 $ npm install mesh-tree --save
 ```
 
+To use in a single process, specify path to the MeSH levelgraph DB. If config object is empty, mesh-tree will use $PATH_TO_MESH_DB as the path:
+
 ```js
 import MeshTree from 'mesh-tree';
 
-let mt = new MeshTree({
-  dbPath: '/path/to/mesh/db',  // if omitted, will use env var $PATH_TO_MESH_DB
-  multi: true
+let meshTree = new MeshTree({
+  dbPath: '/path/to/mesh/db'
 });
 
-mt.getAllDescUIs().then(result => {
+meshTree.getAllDescUIs().then(result => {
   console.log(result);
 });
 ```
+
+To use with multiple processes, pass in a [`multilevel`](https://github.com/juliangruber/multilevel) client.
+
++ server:
+
+  ```js
+  import level from 'level';
+  import multilevel from 'multilevel';
+  import net from 'net';
+
+  net.createServer(con => {
+    con.pipe(multilevel.server(level('/path/to/mesh/db'))).pipe(con);
+  }).listen(meshTreePort);
+  ```
+
++ client:
+
+  ```js
+  import MeshTree from 'mesh-tree';
+  import multilevel from 'multilevel';
+  import net from 'net';
+
+  let db = multilevel.client();
+  let con = net.connect(meshTreePort);
+  con.pipe(db.createRpcStream()).pipe(con);
+
+  let meshTree = new MeshTree({
+    level: db
+  });
+
+  meshTree.getAllDescUIs().then(result => {
+    console.log(result);
+  });
+  ```
 
 ### API
 
