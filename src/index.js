@@ -1,7 +1,6 @@
 import levelgraph from 'levelgraph';
 import levelgraphN3 from 'levelgraph-n3';
 import level from 'level';
-import multilevel from 'level-party';
 import _ from 'lodash';
 import Bluebird from 'bluebird';
 import co from 'co';
@@ -17,14 +16,17 @@ class MeshTree {
   constructor(config) {
     config = config || {};
 
-    let dbPath = config.dbPath || process.env['PATH_TO_MESH_TESTDB'];
-
-    if (config.multi) {
-      this.db = levelgraphN3(levelgraph(multilevel(dbPath)));
+    let DB;
+    if (config.level) {
+      DB = config.level;
     } else {
-      this.db = levelgraphN3(levelgraph(level(dbPath)));
+      let dbPath = config.dbPath || process.env['PATH_TO_MESH_DB'] || 'dbtest';
+      DB = level(dbPath);
     }
+
+    this.db = levelgraphN3(levelgraph(DB));
     this.dbSearch = Bluebird.promisify(this.db.search);
+
   }
 }
 
