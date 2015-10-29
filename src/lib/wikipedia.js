@@ -1,7 +1,7 @@
 import request from 'request';
 import Bluebird from 'bluebird';
 
-let requestPromise = Bluebird.promisify(request);
+let requestPromise = Bluebird.promisify(request, {multiArgs: true});
 
 export function* getMainSections(articleTitle) {
 

@@ -25,7 +25,7 @@ class MeshTree {
     }
 
     this.db = levelgraphN3(levelgraph(DB));
-    this.dbSearch = Bluebird.promisify(this.db.search);
+    this.dbSearch = Bluebird.promisify(this.db.search, {multiArgs: false});
 
   }
 }
