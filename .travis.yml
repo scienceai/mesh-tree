@@ -1,20 +1,7 @@
 language: node_js
 node_js:
   - "4"
-before_install:
-  - sudo apt-get install libsnappy-dev
-  - cd /tmp
-  - wget https://github.com/google/leveldb/archive/v1.18.tar.gz
-  - tar -xzf v1.18.tar.gz
-  - cd leveldb-1.18
-  - make
-  - sudo mv libleveldb.* /usr/local/lib
-  - cd include
-  - sudo cp -R leveldb /usr/local/include
-  - sudo ldconfig
-  - cd $TRAVIS_BUILD_DIR
 before_script:
-  - npm install -g babel
   - npm run initdb-test
 script:
   - npm test
