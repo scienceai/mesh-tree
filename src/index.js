@@ -127,7 +127,7 @@ MeshTree.prototype.getWikipediaEntryByDescUI = co.wrap(function* (opts) {
 
   if (_.isArray(opts)) opts = opts[0];
 
-  const descUI = opts.descUI;
+  const descUI = this.format(opts.id, 'mesh');
   const level = opts.level;
 
   let concept = yield this.getPreferredTermByDescUI(descUI);

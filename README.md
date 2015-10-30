@@ -99,13 +99,13 @@ Returns array of all protocol (e.g., cancer-related) supplementary record UIs
 
 ###### `getWikipediaEntryByDescUI(opts)`
 
-where `opts = { descUI, level }`.
-
 Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
 
-`level`:
-- `0` - abstract only
-- `1` - all text
+`opts`:
+  - `id`
+  - `level`:
+    - `0` - abstract only
+    - `1` - all text
 
 One can extract either the abstract or entire body of text from wikipedia (cleaned, without link info, references, citations, etc.) for a particular concept, based on the preferred concept term. The function automatically follows any automatic redirects. For example, in MeSH the concept `Calcimycin` corresponds to the wikipedia page on `A23187`, which is an accepted term under the MeSH concept but not the preferred term.
 
