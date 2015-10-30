@@ -1,25 +1,52 @@
+describe.only('getAllSCRProtocolUIs', function () {
+  this.timeout(5 * 1000);
 
-// getAllSCRProtocolUIs
-describe('get array of all protocol (e.g., cancer-related) supplement record UIs', function () {
+  describe('get array of all protocol (e.g., cancer-related) supplement records as MeSH uis', () => {
+    let allSCRProtocolUIs;
 
-  var allSCRProtocolUIs;
-
-  before(function (done) {
-    this.timeout(15000);
-    meshTree.getAllSCRProtocolUIs().then(function (result) {
-      allSCRProtocolUIs = result;
-      done();
+    before(done => {
+      meshTree.getAllSCRProtocolUIs({ format: 'mesh' }).then(result => {
+        allSCRProtocolUIs = result;
+        done();
+      });
     });
+
+    it('should return an array', () => {
+      expect(allSCRProtocolUIs).to.be.instanceOf(Array);
+    });
+
+    it('should contain 1212 elements', () => {
+      expect(allSCRProtocolUIs.length).to.eql(1212);
+    });
+
+    it('should include C510854', () => {
+      expect(allSCRProtocolUIs).to.include('C510854');
+    });
+
   });
 
-  it('should return an array', function () {
-    expect(allSCRProtocolUIs).to.be.instanceOf(Array);
-  });
-  it('should contain 1212 elements', function () {
-    expect(allSCRProtocolUIs.length).to.eql(1212);
-  });
-  it('should include C510854', function () {
-    expect(allSCRProtocolUIs).to.include('C510854');
+  describe('get array of all protocol (e.g., cancer-related) supplement records as RDF ids', () => {
+    let allSCRProtocolUIs;
+
+    before(done => {
+      meshTree.getAllSCRProtocolUIs({ format: 'rdf' }).then(result => {
+        allSCRProtocolUIs = result;
+        done();
+      });
+    });
+
+    it('should return an array', () => {
+      expect(allSCRProtocolUIs).to.be.instanceOf(Array);
+    });
+
+    it('should contain 1212 elements', () => {
+      expect(allSCRProtocolUIs.length).to.eql(1212);
+    });
+
+    it('should include http://id.nlm.nih.gov/mesh/C510854', () => {
+      expect(allSCRProtocolUIs).to.include('http://id.nlm.nih.gov/mesh/C510854');
+    });
+
   });
 
 });

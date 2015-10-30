@@ -4,8 +4,8 @@ import level from 'level';
 import _ from 'lodash';
 import Bluebird from 'bluebird';
 import co from 'co';
-import * as wikipedia from './lib/wikipedia';
-import permutations from './lib/permutations';
+import * as wikipedia from './helper/wikipedia';
+import permutations from './helper/permutations';
 
 const MESH = 'http://id.nlm.nih.gov/mesh/';
 const MESHV = 'http://id.nlm.nih.gov/mesh/vocab#';
@@ -28,12 +28,32 @@ class MeshTree {
     this.dbSearch = Bluebird.promisify(this.db.search, {multiArgs: false});
 
   }
+
+  formatID(id, format) {
+    if (format === 'rdf') {
+      if (id.startsWith(MESH)) {
+        return id;
+      } else {
+        return MESH + id;
+      }
+    } else if (format === 'mesh') {
+      if (id.startsWith(MESH)) {
+        return id.replace(MESH, '');
+      } else {
+        return id;
+      }
+    } else {
+      return id;
+    }
+  }
 }
 
 /*
-* Returns array of all descriptor record UIs
+* Returns array of all descriptor records
 */
-MeshTree.prototype.getAllDescUIs = co.wrap(function* () {
+MeshTree.prototype.getAllDescUIs = co.wrap(function* (opts) {
+  opts = opts || {};
+  let format = opts.format || 'rdf';
 
   let result = yield this.dbSearch({
     subject: this.db.v('desc'),
@@ -41,32 +61,33 @@ MeshTree.prototype.getAllDescUIs = co.wrap(function* () {
     object: MESHV + 'TopicalDescriptor'
   }, {});
 
-  let allDescUIs = _.map(result, (item) => item['desc'].replace(MESH, ''));
-
-  return allDescUIs;
+  return _.map(result, item => this.formatID(item['desc'], format));
 
 });
 
 /*
-* Returns array of all chemical supplementary record UIs
+* Returns array of all chemical supplementary records
 */
-MeshTree.prototype.getAllSCRChemicalUIs = co.wrap(function* () {
+MeshTree.prototype.getAllSCRChemicalUIs = co.wrap(function* (opts) {
+  opts = opts || {};
+  let format = opts.format || 'rdf';
 
   let result = yield this.dbSearch({
     subject: this.db.v('chemicalSCR'),
     predicate: RDF + 'type',
     object: MESHV + 'SCR_Chemical'
   }, {});
-console.log(allSCRChemicalUIs);
-  let allSCRChemicalUIs = _.map(result, (item) => item['chemicalSCR'].replace(MESH, ''));
-  return allSCRChemicalUIs;
+
+  return _.map(result, item => this.formatID(item['chemicalSCR'], format));
 
 });
 
 /*
-* Returns array of all disease (rare) supplementary record UIs
+* Returns array of all disease (rare) supplementary records
 */
-MeshTree.prototype.getAllSCRDiseaseUIs = co.wrap(function* () {
+MeshTree.prototype.getAllSCRDiseaseUIs = co.wrap(function* (opts) {
+  opts = opts || {};
+  let format = opts.format || 'rdf';
 
   let result = yield this.dbSearch({
     subject: this.db.v('diseaseSCR'),
@@ -74,15 +95,16 @@ MeshTree.prototype.getAllSCRDiseaseUIs = co.wrap(function* () {
     object: MESHV + 'SCR_Disease'
   }, {});
 
-  let allSCRDiseaseUIs = _.map(result, (item) => item['diseaseSCR'].replace(MESH, ''));
-  return allSCRDiseaseUIs;
+  return _.map(result, item => this.formatID(item['diseaseSCR'], format));
 
 });
 
 /*
-* Returns array of all protocol (e.g., cancer-related) supplementary record UIs
+* Returns array of all protocol (e.g., cancer-related) supplementary records
 */
-MeshTree.prototype.getAllSCRProtocolUIs = co.wrap(function* () {
+MeshTree.prototype.getAllSCRProtocolUIs = co.wrap(function* (opts) {
+  opts = opts || {};
+  let format = opts.format || 'rdf';
 
   let result = yield this.dbSearch({
     subject: this.db.v('protocolSCR'),
@@ -90,8 +112,7 @@ MeshTree.prototype.getAllSCRProtocolUIs = co.wrap(function* () {
     object: MESHV + 'SCR_Protocol'
   }, {});
 
-  let allSCRProtocolUIs = _.map(result, (item) => item['protocolSCR'].replace(MESH, ''));
-  return allSCRProtocolUIs;
+  return _.map(result, item => this.formatID(item['protocolSCR'], format));
 
 });
 

@@ -69,21 +69,33 @@ To use with multiple processes, pass in a [`multilevel`](https://github.com/juli
 
 ### API
 
-###### `getAllDescUIs()`
+###### `getAllDescUIs(opts)`
 
 Returns array of all descriptor record UIs
 
-###### `getAllSCRChemicalUIs()`
+`opts`:
+  - `format`: `rdf` or `mesh`
+
+###### `getAllSCRChemicalUIs(opts)`
 
 Returns array of all chemical supplementary record UIs
 
-###### `getAllSCRDiseaseUIs()`
+`opts`:
+  - `format`: `rdf` or `mesh`
+
+###### `getAllSCRDiseaseUIs(opts)`
 
 Returns array of all disease (rare) supplementary record UIs
 
-###### `getAllSCRProtocolUIs()`
+`opts`:
+  - `format`: `rdf` or `mesh`
+
+###### `getAllSCRProtocolUIs(opts)`
 
 Returns array of all protocol (e.g., cancer-related) supplementary record UIs
+
+`opts`:
+  - `format`: `rdf` or `mesh`
 
 ###### `getWikipediaEntryByDescUI(opts)`
 
