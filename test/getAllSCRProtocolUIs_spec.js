@@ -1,4 +1,4 @@
-describe.only('getAllSCRProtocolUIs', function () {
+describe('getAllSCRProtocolUIs', function () {
   this.timeout(5 * 1000);
 
   describe('get array of all protocol (e.g., cancer-related) supplement records as MeSH uis', () => {

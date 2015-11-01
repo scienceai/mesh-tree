@@ -74,28 +74,28 @@ To use with multiple processes, pass in a [`multilevel`](https://github.com/juli
 Returns array of all descriptor record UIs
 
 `opts`:
-  - `format`: `rdf` or `mesh`
+  - `format`: `rdf` or `mesh` for output format
 
 ###### `getAllSCRChemicalUIs(opts)`
 
 Returns array of all chemical supplementary record UIs
 
 `opts`:
-  - `format`: `rdf` or `mesh`
+  - `format`: `rdf` or `mesh` for output format
 
 ###### `getAllSCRDiseaseUIs(opts)`
 
 Returns array of all disease (rare) supplementary record UIs
 
 `opts`:
-  - `format`: `rdf` or `mesh`
+  - `format`: `rdf` or `mesh` for output format
 
 ###### `getAllSCRProtocolUIs(opts)`
 
 Returns array of all protocol (e.g., cancer-related) supplementary record UIs
 
 `opts`:
-  - `format`: `rdf` or `mesh`
+  - `format`: `rdf` or `mesh` for output format
 
 ###### `getWikiEntry(opts)`
 
@@ -109,49 +109,46 @@ Returns the cleaned text output of the wikipedia page corresponding to the descr
 
 One can extract either the abstract or entire body of text from wikipedia (cleaned, without link info, references, citations, etc.) for a particular concept, based on the preferred concept term. The function automatically follows any automatic redirects. For example, in MeSH the concept `Calcimycin` corresponds to the wikipedia page on `A23187`, which is an accepted term under the MeSH concept but not the preferred term.
 
-###### `getTreeNumbersByDescUI (descUI)`
+###### `getTreeNumbers(opts)`
 
 Returns array of tree numbers by descriptor record unique identifier.
 
 Example: `'D000001'` returns `['D03.438.221.173']`
 
-###### `getDescUIByTreeNumber(treeNum)`
+`opts`:
+  - `id`: either RDF URL id or MeSH UI
+  - `format`: `rdf` or `mesh` for output format
+
+###### `treeNumberToUI(opts)`
 
 Returns descriptor record unique identifier by tree number.
 
 Example: `'D03.438.221.173'` returns `'D000001'`
 
-###### `getPreferredTermByDescUI(descUI)`
+`opts`:
+  - `treeNum`: either RDF URL id with tree number or tree number by itself
+  - `format`: `rdf` or `mesh` for output format
 
-Returns the preferred term by descriptor record unique identifier (i.e., the preferred term of the preferred concept).
-
-Example: `'D000001'` returns `'Calcimycin'`
-
-###### `getPreferredConceptByDescUI(descUI)`
+###### `getPrefConceptUI(opts)`
 
 Returns preferred concept UI for descriptor record UI.
 
 Example: `'D000001'` returns `'M0000001'`
 
-###### `getConceptUIsByDescUI(descUI)`
+`opts`:
+  - `id`: either RDF URL id or MeSH UI
+  - `format`: `rdf` or `mesh` for output format
 
-Returns all concept UIs contained by descriptor record UI (both preferred and not).
+###### `getPrefTerm(opts)`
 
-Example: `'D000001'` returns `['M0353609', 'M0000001']`
+Returns the preferred term by descriptor record unique identifier (i.e., the preferred term of the preferred concept).
 
-###### `getTermUIsByConceptUI(conceptUI)`
+Example: `'D000001'` returns `'Calcimycin'`
 
-Returns all term UIs contained by concept UI (both preferred and not).
+`opts`:
+  - `id`: either RDF URL id or MeSH UI
 
-Example: `'M0353609'` returns `['T000003', 'T000004', 'T000001']`
-
-###### `getTermsByTermUI(termUI)`
-
-Returns all terms contained by term UI (both preferred and not).
-
-Example: `'T000003'` returns `['A23187, Antibiotic', 'Antibiotic A23187']`
-
-###### `getAllTermsByDescUI(descUI)`
+###### `getAllTerms(opts)`
 
 Returns all terms by descriptor record unique identifier (i.e., all terms for all concepts, both preferred and not).
 
@@ -161,46 +158,66 @@ Can also use chemical supplementary concept records UIs here as well:
 
 Example: `'C025734'` returns `['CH-A1-MG', 'alpha 1 microglobulin, chorionic', 'chorionic alpha 1-microglobulin', 'chorionic alpha(1)-microglobulin']`
 
-###### `getScopeNoteByDescUI(descUI)`
+`opts`:
+  - `id`: either RDF URL id or MeSH UI
+
+###### `getScopeNote(opts)`
 
 Returns scope note for descriptor record unique identifier (scope notes are contained in the preferred concept record).
 
 Example: `'D000001'`, via concept `'M0000001'`, returns `'An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems.'`
 
-###### `getParentDescUIsForDescUI(descUI)`
+`opts`:
+  - `id`: either RDF URL id or MeSH UI
+
+###### `getParents(opts)`
 
 Returns parent descriptor records UIs (returns an array as records can exist in multiple tree branches).
 
 Example: `'D000001'` returns `['D001583']`
 Example: `'D005138'` returns `['D006197', 'D005123']`
 
-###### `getParentDescUIsForSCR(scrUI)`
-
-Returns parent descriptor record UIs mapped from supplementary concept record UI
+If id provided is SCR, returns parent descriptor record UIs mapped from supplementary concept record UI.
 
 Example: `'C041293'` returns `['D011140']`
 Example: `'C025735'` returns `['D001286', 'D002164', 'D012602']`
 
-###### `getAncestorDescUIsForDescUI(descUI)`
+`opts`:
+  - `id`: either RDF URL id or MeSH UI
+  - `format`: `rdf` or `mesh` for output format
+
+###### `getAncestors(opts)`
 
 Returns all ancestor descriptor records UIs, following all parent branches. Returns an array.
 
 Example: `'D000001'` returns `['D001583', 'D006574', 'D006571']`
 Example: `'D005138'` returns `['D005123', 'D006197', 'D005145', 'D012679', 'D034582', 'D006257', 'D001829']`
 
-###### `getChildrenDescUIsForDescUI(descUI)`
+`opts`:
+  - `id`: either RDF URL id or MeSH UI
+  - `format`: `rdf` or `mesh` for output format
+
+###### `getChildren(opts)`
 
 Returns children descriptor records UIs (immediate, not descendants)
 
 Example: `'D012343'` returns `['D012345', 'D000926', 'D012346']`
 
-###### `getSiblingDescUIsForDescUI(descUI)`
+`opts`:
+  - `id`: either RDF URL id or MeSH UI
+  - `format`: `rdf` or `mesh` for output format
+
+###### `getSiblings(opts)`
 
 Returns sibling descriptor records UIs (across all branches a descriptor record may exist under).
 
 Example: `D015834 (Cochlear Diseases)` returns `D018159 (Endolymphatic Hydrops), D015837 (Vestibular Diseases), D007762 (Labyrinthitis)`
 
-###### `getCommonAncestorsForDescUIs(descUIArray)`
+`opts`:
+  - `id`: either RDF URL id or MeSH UI
+  - `format`: `rdf` or `mesh` for output format
+
+###### `getCommonAncestors(opts)`
 
 Takes as argument an array of descriptor record UIs and returns descriptor records UI of closest common ancestors of two or more descriptor record UIs (if a descriptor exists in more than one branch on the tree, there may be more than one common ancestor).
 
@@ -210,11 +227,15 @@ Example: `D000233 (Adenoidectomy), D014068 (Tonsillectomy), D007828 (Laryngoscop
 
 Example: `D011434 (Proprioception), D014785 (Vision, Ocular), D004856 (Postural Balance)` returns `D012677 (Sensation)`
 
-###### `isDescendantOf(descUI1, descUI2)`
+`opts`:
+  - `ids`: Array of either RDF URL id or MeSH UI
+  - `format`: `rdf` or `mesh` for output format
 
-Tests whether or not descUI2 is a descendant of descUI1 (child of >=1 depth)
+###### `isDescendantOf(id1, id2)`
 
-###### `clusterDescUIs(descUIArray)`
+Tests whether or not id2 is a descendant of id1 (child of >=1 depth). IDs can be either RDF URL ids or MeSH UIs.
+
+###### `clusterDescUIs(idArray)`
 
 Takes a flat array of descriptor record UIs and returns a nested tree structure based on parent-descendant relationships amongst all the array elements. In other words, it recreates a subtree based on the overarching MeSH ontology tree on a given list of element nodes.
 
@@ -264,15 +285,22 @@ An example for a list containing more than one "relative top-level" element, suc
 ]
 ```
 
-###### `getPharmacologicalAction(descUI)`
+###### `getPharmacologicalAction(opts)`
 
 Tests whether a descriptor has pharmacological actions (in other words, if the descriptor is a drug). If true, returns array of descUI mappings of the pharmacological action, otherwise returns null.
 
 Example: `'D000001' (Calcimycin)` returns `['D000900', 'D061207'] (Anti-Bacterial Agents, Calcium Ionophores)`
 
-###### `getSchemaOrgTypes(descUI)`
+`opts`:
+  - `id`: either RDF URL id or MeSH UI
+  - `format`: `rdf` or `mesh` for output format
+
+###### `getSchemaOrgTypes(opts)`
 
 Performs mapping of MeSH concepts onto Schema.org classes (e.g., Drug)
+
+`opts`:
+  - `id`: either RDF URL id or MeSH UI
 
 ###### `createPropertiesObject(propRequestObj)`
 

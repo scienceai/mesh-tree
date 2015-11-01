@@ -1,4 +1,4 @@
-describe.only('get wikipedia text for descriptor UI', function () {
+describe('get wikipedia text for descriptor UI', function () {
   this.timeout(30*1000);
 
   describe('D000001', () => {

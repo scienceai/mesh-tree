@@ -128,7 +128,7 @@ MeshTree.prototype.getWikiEntry = co.wrap(function* (opts) {
   let descUI = this.formatID(opts.id, 'mesh');
   let level = opts.level || 0;
 
-  let concept = yield this.getPreferredTermByDescUI(descUI);
+  let concept = yield this.getPrefTerm({ id: descUI });
   let wiki = yield wikipedia.getMainSections(concept.replace(/ /g, '+'));
 
   if (level === 0) {
@@ -163,11 +163,14 @@ MeshTree.prototype.getWikiEntry = co.wrap(function* (opts) {
 });
 
 /*
-* Returns array of tree numbers by descriptor record unique identifier
+* Returns array of tree numbers for descriptor record unique identifier
 *
 * Example: 'D000001' returns ['D03.438.221.173']
 */
-MeshTree.prototype.getTreeNumbersByDescUI = co.wrap(function* (descUI) {
+MeshTree.prototype.getTreeNumbers = co.wrap(function* (opts) {
+  opts = opts || {};
+  let descUI = this.formatID(opts.id, 'mesh');
+  let format = opts.format || 'rdf';
 
   let result = yield this.dbSearch({
     subject: MESH + descUI,
@@ -175,7 +178,7 @@ MeshTree.prototype.getTreeNumbersByDescUI = co.wrap(function* (descUI) {
     object: this.db.v('treeNumber')
   }, {});
 
-  let treeNumbers = _.map(result, (item) => item['treeNumber'].replace(MESH, ''));
+  let treeNumbers = _.map(result, item => this.formatID(item['treeNumber'], format));
   return treeNumbers;
 
 });
@@ -185,7 +188,10 @@ MeshTree.prototype.getTreeNumbersByDescUI = co.wrap(function* (descUI) {
 *
 * Example: 'D03.438.221.173' returns 'D000001'
 */
-MeshTree.prototype.getDescUIByTreeNumber = co.wrap(function* (treeNum) {
+MeshTree.prototype.treeNumberToUI = co.wrap(function* (opts) {
+  opts = opts || {};
+  let treeNum = this.formatID(opts.treeNum, 'mesh');
+  let format = opts.format || 'rdf';
 
   let result = yield this.dbSearch({
     subject: this.db.v('descUI'),
@@ -196,8 +202,30 @@ MeshTree.prototype.getDescUIByTreeNumber = co.wrap(function* (treeNum) {
   if (_.isEmpty(result)) {
     return null;
   } else {
-    return result[0]['descUI'].replace(MESH, '');
+    return this.formatID(result[0]['descUI'], format);
   }
+
+});
+
+/*
+* Returns preferred concept UI for descriptor record UI
+*
+* Example: 'D000001' returns 'M0000001'
+*/
+MeshTree.prototype.getPrefConceptUI = co.wrap(function* (opts) {
+  opts = opts || {};
+  let descUI = this.formatID(opts.id, 'mesh');
+  let format = opts.format || 'rdf';
+
+  let result = yield this.dbSearch({
+    subject: MESH + descUI,
+    predicate: MESHV + 'preferredConcept',
+    object: this.db.v('conceptUI')
+  }, {});
+
+  if (_.isEmpty(result)) return null;
+
+  return this.formatID(result[0]['conceptUI'], format);
 
 });
 
@@ -207,7 +235,9 @@ MeshTree.prototype.getDescUIByTreeNumber = co.wrap(function* (treeNum) {
 *
 * Example: 'D000001' returns 'Calcimycin'
 */
-MeshTree.prototype.getPreferredTermByDescUI = co.wrap(function* (descUI) {
+MeshTree.prototype.getPrefTerm = co.wrap(function* (opts) {
+  opts = opts || {};
+  let descUI = this.formatID(opts.id, 'mesh');
 
   let result1 = yield this.dbSearch({
     subject: MESH + descUI,
@@ -221,110 +251,11 @@ MeshTree.prototype.getPreferredTermByDescUI = co.wrap(function* (descUI) {
     object: this.db.v('term')
   }, {});
 
-  if (_.isEmpty(result2)) throw('empty result.');
+  if (_.isEmpty(result2)) return null;
 
   let result2_en = result2.filter(r => r['term'].endsWith('@en'));
 
   return result2_en[0]['term'].replace(/\"/g, '').replace(/@en/, '');
-
-});
-
-/*
-* Returns preferred concept UI for descriptor record UI
-*
-* Example: 'D000001' returns 'M0000001'
-*/
-MeshTree.prototype.getPreferredConceptByDescUI = co.wrap(function* (descUI) {
-
-  let result = yield this.dbSearch({
-    subject: MESH + descUI,
-    predicate: MESHV + 'preferredConcept',
-    object: this.db.v('conceptUI')
-  }, {});
-
-  if (_.isEmpty(result)) throw('empty result.');
-
-  return result[0]['conceptUI'].replace(MESH, '');
-
-});
-
-/*
-* Returns all concept UIs contained by descriptor record UI
-* (both preferred and not)
-*
-* Example: 'D000001' returns [ 'M0353609', 'M0000001' ]
-*/
-MeshTree.prototype.getConceptUIsByDescUI = co.wrap(function* (descUI) {
-
-  let allConceptUIs = [];
-
-  for (let pred of ['concept', 'preferredConcept']) {
-
-    let result = yield this.dbSearch({
-      subject: MESH + descUI,
-      predicate: MESHV + pred,
-      object: this.db.v('conceptUI')
-    }, {});
-
-    result.forEach((item) => allConceptUIs.push(item['conceptUI'].replace(MESH, '')));
-
-  }
-
-  return allConceptUIs;
-
-});
-
-/*
-* Returns all term UIs contained by concept UI
-* (both preferred and not)
-*
-* Example: 'M0353609' returns [ 'T000003', 'T000004', 'T000001' ]
-*/
-MeshTree.prototype.getTermUIsByConceptUI = co.wrap(function* (conceptUI) {
-
-  let allTermUIs = [];
-
-  for (let pred of ['term', 'preferredTerm']) {
-
-    let result = yield this.dbSearch({
-      subject: MESH + conceptUI,
-      predicate: MESHV + pred,
-      object: this.db.v('termUI')
-    }, {});
-
-    result.forEach((item) => allTermUIs.push(item['termUI'].replace(MESH, '')));
-
-  }
-
-  return allTermUIs;
-
-});
-
-/*
-* Returns all terms contained by term UI
-* (both preferred and not)
-*
-* Example: 'T000003' returns [ 'A23187, Antibiotic', 'Antibiotic A23187' ]
-*/
-MeshTree.prototype.getTermsByTermUI = co.wrap(function* (termUI) {
-
-  let allLabels = [];
-
-  for (let pred of ['label', 'altLabel', 'prefLabel']) {
-
-    let result = yield this.dbSearch({
-      subject: MESH + termUI,
-      predicate: MESHV + pred,
-      object: this.db.v('label')
-    }, {});
-
-    let result_en = result.filter(r => r['label'].endsWith('@en'));
-
-    result_en.forEach(item => allLabels.push(item['label'].replace(/\"/g, '').replace(/@en/, '')));
-
-  }
-
-  return allLabels;
 
 });
 
@@ -334,20 +265,49 @@ MeshTree.prototype.getTermsByTermUI = co.wrap(function* (termUI) {
 *
 * Example: 'D000001' returns [ 'A23187, Antibiotic', 'Antibiotic A23187', 'A23187', 'A 23187', 'A-23187', 'Calcimycin' ]
 */
-MeshTree.prototype.getAllTermsByDescUI = co.wrap(function* (descUI) {
+MeshTree.prototype.getAllTerms = co.wrap(function* (opts) {
+  opts = opts || {};
+  let descUI = this.formatID(opts.id, 'mesh');
 
-  let allTerms = [];
+  let allTermLabels = [];
 
-  let conceptUIs = yield this.getConceptUIsByDescUI(descUI);
-  for (let conceptUI of conceptUIs) {
-    let termUIs = yield this.getTermUIsByConceptUI(conceptUI);
-    for (let termUI of termUIs) {
-      let labels = yield this.getTermsByTermUI(termUI);
-      labels.forEach((label) => allTerms.push(label.replace(/\"/g, '')));
+  for (let pred1 of ['concept', 'preferredConcept']) {
+    let conceptUIs = yield this.dbSearch({
+      subject: MESH + descUI,
+      predicate: MESHV + pred1,
+      object: this.db.v('conceptUI')
+    }, {});
+
+    for (let item of conceptUIs) {
+      let conceptUI = item['conceptUI'];
+
+      for (let pred2 of ['term', 'preferredTerm']) {
+        let termUIs = yield this.dbSearch({
+          subject: conceptUI,
+          predicate: MESHV + pred2,
+          object: this.db.v('termUI')
+        }, {});
+
+        for (let item of termUIs) {
+          let termUI = item['termUI'];
+
+          for (let pred3 of ['label', 'altLabel', 'prefLabel']) {
+            let terms = yield this.dbSearch({
+              subject: termUI,
+              predicate: MESHV + pred3,
+              object: this.db.v('label')
+            }, {});
+
+            let terms_en = terms.filter(r => r['label'].endsWith('@en'));
+            terms_en.forEach(term => allTermLabels.push(term['label'].replace(/\"/g, '').replace(/@en/, '')));
+
+          }
+        }
+      }
     }
   }
 
-  return allTerms;
+  return allTermLabels;
 
 });
 
@@ -357,9 +317,11 @@ MeshTree.prototype.getAllTermsByDescUI = co.wrap(function* (descUI) {
 *
 * Example: 'D000001', via concept 'M0000001', returns 'An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems.'
 */
-MeshTree.prototype.getScopeNoteByDescUI = co.wrap(function* (descUI) {
+MeshTree.prototype.getScopeNote = co.wrap(function* (opts) {
+  opts = opts || {};
+  let descUI = this.formatID(opts.id, 'mesh');
 
-  let conceptUI = yield this.getPreferredConceptByDescUI(descUI);
+  let conceptUI = yield this.getPrefConceptUI({ id: descUI, format: 'mesh' });
 
   let result = yield this.dbSearch({
     subject: MESH + conceptUI,
@@ -382,35 +344,43 @@ MeshTree.prototype.getScopeNoteByDescUI = co.wrap(function* (descUI) {
 *
 * Example: 'D000001' returns ['D001583']
 *          'D005138' returns ['D006197', 'D005123']
-*/
-MeshTree.prototype.getParentDescUIsForDescUI = co.wrap(function* (descUI) {
-
-  let result = yield this.dbSearch({
-    subject: MESH + descUI,
-    predicate: MESHV + 'broaderDescriptor',
-    object: this.db.v('descUI')
-  }, {});
-
-  return _.unique(result.map(res => res['descUI'].replace(MESH, '')));
-
-});
-
-/*
-* Returns parent descriptor record UIs mapped from supplementary concept record UI
+*
+* If id provided is SCR,
+* returns parent descriptor record UIs mapped from supplementary concept record UI
 *
 * Example: 'C025735' returns ['D001286', 'D002164', 'D012602']
 */
-MeshTree.prototype.getParentDescUIsForSCR = co.wrap(function* (scrUI) {
+MeshTree.prototype.getParents = co.wrap(function* (opts) {
+  opts = opts || {};
+  let ui = this.formatID(opts.id, 'mesh');
+  let format = opts.format || 'rdf';
 
-  let result = yield this.dbSearch({
-    subject: MESH + scrUI,
-    predicate: MESHV + 'preferredMappedTo',
-    object: this.db.v('descUI')
-  }, {});
+  if (/^D\d+$/.test(ui)) {
+    // descriptor record UI
 
-  // get rid of descriptor qualifiers as well
-  return _.unique(result.map(res => res['descUI'].replace(MESH, '').replace(/Q\d+/g, '')));
+    let result = yield this.dbSearch({
+      subject: MESH + ui,
+      predicate: MESHV + 'broaderDescriptor',
+      object: this.db.v('descUI')
+    }, {});
 
+    return _.unique(result.map(res => this.formatID(res['descUI'], format)));
+
+  } else if (/^C\d+$/.test(ui)) {
+    // supplemetal record UI
+
+    let result = yield this.dbSearch({
+      subject: MESH + ui,
+      predicate: MESHV + 'preferredMappedTo',
+      object: this.db.v('descUI')
+    }, {});
+
+    // get rid of descriptor qualifiers as well
+    return _.unique(result.map(res => this.formatID(res['descUI'], format).replace(/Q\d+/g, '')));
+
+  } else {
+    return [];
+  }
 });
 
 /*
@@ -420,7 +390,10 @@ MeshTree.prototype.getParentDescUIsForSCR = co.wrap(function* (scrUI) {
 * Example: 'D000001' returns ['D001583', 'D006574', 'D006571']
 *          'D005138' returns ['D005123', 'D006197', 'D005145', 'D012679', 'D034582', 'D006257', 'D001829']
 */
-MeshTree.prototype.getAncestorDescUIsForDescUI = co.wrap(function* (descUI) {
+MeshTree.prototype.getAncestors = co.wrap(function* (opts) {
+  opts = opts || {};
+  let descUI = this.formatID(opts.id, 'mesh');
+  let format = opts.format || 'rdf';
 
   let parents = [];
 
@@ -431,7 +404,7 @@ MeshTree.prototype.getAncestorDescUIsForDescUI = co.wrap(function* (descUI) {
     let nodesTemp = [];
 
     for (let node of nodes) {
-      let parentsTemp = yield this.getParentDescUIsForDescUI(node);
+      let parentsTemp = yield this.getParents({ id: node, format: 'mesh' });
       _.each(parentsTemp, (p) => nodesTemp.push(p));
       _.each(parentsTemp, (p) => parents.push(p));
     }
@@ -440,7 +413,7 @@ MeshTree.prototype.getAncestorDescUIsForDescUI = co.wrap(function* (descUI) {
     hasParents = nodesTemp.length > 0;
   }
 
-  return _.unique(parents);
+  return _.unique(parents).map(p => this.formatID(p, format));
 
 });
 
@@ -450,11 +423,14 @@ MeshTree.prototype.getAncestorDescUIsForDescUI = co.wrap(function* (descUI) {
 *
 * Example: 'D012343' returns ['D012345', 'D000926', 'D012346']
 */
-MeshTree.prototype.getChildrenDescUIsForDescUI = co.wrap(function* (descUI) {
+MeshTree.prototype.getChildren = co.wrap(function* (opts) {
+  opts = opts || {};
+  let descUI = this.formatID(opts.id, 'mesh');
+  let format = opts.format || 'rdf';
 
   let childrenDescUIs = [];
 
-  let treeNums = yield this.getTreeNumbersByDescUI(descUI);
+  let treeNums = yield this.getTreeNumbers({ id: descUI, format: 'mesh' });
 
   for (let treeNum of treeNums) {
 
@@ -466,14 +442,15 @@ MeshTree.prototype.getChildrenDescUIsForDescUI = co.wrap(function* (descUI) {
 
     if (!_.isEmpty(result)) {
       for (let res of result) {
-        let ui = yield this.getDescUIByTreeNumber(res['treeNum'].replace(MESH, ''));
+        let treeNum = this.formatID(res['treeNum'], 'mesh');
+        let ui = yield this.treeNumberToUI({ treeNum: treeNum, format: 'mesh' });
         childrenDescUIs.push(ui);
       }
     }
 
   }
 
-  return childrenDescUIs;
+  return childrenDescUIs.map(ui => this.formatID(ui, format));
 
 });
 
@@ -483,22 +460,25 @@ MeshTree.prototype.getChildrenDescUIsForDescUI = co.wrap(function* (descUI) {
 *
 * Example: 'D015834' returns ['D012345', 'D000926', 'D012346']
 */
-MeshTree.prototype.getSiblingDescUIsForDescUI = co.wrap(function* (descUI) {
+MeshTree.prototype.getSiblings = co.wrap(function* (opts) {
+  opts = opts || {};
+  let descUI = this.formatID(opts.id, 'mesh');
+  let format = opts.format || 'rdf';
 
   let siblingDescUIs = [];
 
-  let parentDescUIs = yield this.getParentDescUIsForDescUI(descUI);
+  let parentDescUIs = yield this.getParents({ id: descUI, format: 'mesh' });
 
   for (let parent of parentDescUIs) {
 
-    let childrenDescUIs = yield this.getChildrenDescUIsForDescUI(parent);
+    let childrenDescUIs = yield this.getChildren({ id: parent, format: 'mesh' });
     _.forEach(childrenDescUIs, (ui) => siblingDescUIs.push(ui));
 
   }
 
   _.remove(siblingDescUIs, (ui) => (ui === descUI));
 
-  return siblingDescUIs;
+  return siblingDescUIs.map(ui => this.formatID(ui, format));
 
 });
 
@@ -508,16 +488,19 @@ MeshTree.prototype.getSiblingDescUIsForDescUI = co.wrap(function* (descUI) {
 *
 * Example: ['D000926', 'D012345'] returns ['D012343']
 */
-MeshTree.prototype.getCommonAncestorsForDescUIs = co.wrap(function* (descUIArray) {
+MeshTree.prototype.getCommonAncestors = co.wrap(function* (opts) {
+  opts = opts || {};
+  if (!_.isArray(opts.ids)) throw new Error('opts.ids not an array.');
+  let descUIArray = opts.ids.map(id => this.formatID(id, 'mesh'));
+  let format = opts.format || 'rdf';
 
-  if (!_.isArray(descUIArray)) throw new Error('input not an array.');
 
   let commonAncestorsDescUIs = [];
   let commonAncestorsTreeNums = [];
 
   let treeNumsArray = [];
   for (let descUI of descUIArray) {
-    let treeNums = yield this.getTreeNumbersByDescUI(descUI);
+    let treeNums = yield this.getTreeNumbers({ id: descUI, format: 'mesh' });
     treeNumsArray.push(treeNums);
   }
 
@@ -562,7 +545,7 @@ MeshTree.prototype.getCommonAncestorsForDescUIs = co.wrap(function* (descUIArray
       }
 
       // add common ancestor to array
-      let commonAncestorDescUI = yield this.getDescUIByTreeNumber(commonAncestorTreeNum);
+      let commonAncestorDescUI = yield this.treeNumberToUI({ treeNum: commonAncestorTreeNum, format: 'mesh' });
       commonAncestorsDescUIs.push(commonAncestorDescUI);
       commonAncestorsTreeNums.push(commonAncestorTreeNum);
 
@@ -570,15 +553,17 @@ MeshTree.prototype.getCommonAncestorsForDescUIs = co.wrap(function* (descUIArray
 
   }
 
-  return commonAncestorsDescUIs;
+  return commonAncestorsDescUIs.map(ui => this.formatID(ui, format));
 
 });
 
 
 /*
-* Tests whether or not descUI2 is a descendant of descUI1 (child of >=1 depth)
+* Tests whether or not id2 is a descendant of id1 (child of >=1 depth)
 */
-MeshTree.prototype.isDescendantOf = co.wrap(function* (descUI1, descUI2) {
+MeshTree.prototype.isDescendantOf = co.wrap(function* (id1, id2) {
+  let descUI1 = this.formatID(id1, 'mesh');
+  let descUI2 = this.formatID(id2, 'mesh');
 
   if (descUI1 === descUI2) return false;
 
@@ -591,7 +576,7 @@ MeshTree.prototype.isDescendantOf = co.wrap(function* (descUI1, descUI2) {
     let nodesTemp = [];
 
     for (let node of nodes) {
-      let parentsTemp = yield this.getParentDescUIsForDescUI(node);
+      let parentsTemp = yield this.getParents({ id: node, format: 'mesh' });
 
       _.each(parentsTemp, (p) => {
         parentsAll.push(p);
@@ -621,7 +606,7 @@ MeshTree.prototype.clusterDescUIs = co.wrap(function* (idArray) {
   // booleans whether a concept can have potential children (i.e., not the most specific concept)
   let mostSpecificConcept = {};
   for (let descUI of descUIArray) {
-    let children = yield this.getChildrenDescUIsForDescUI(descUI);
+    let children = yield this.getChildren({ id: descUI, format: 'mesh' });
     mostSpecificConcept[descUI] = !children || !children.length;
   }
 
@@ -640,7 +625,7 @@ MeshTree.prototype.clusterDescUIs = co.wrap(function* (idArray) {
       let nodesTemp = [];
 
       for (let node of nodes) {
-        let parentsTemp = yield this.getParentDescUIsForDescUI(node);
+        let parentsTemp = yield this.getParents({ id: node, format: 'mesh' });
         let parentsInArray = _.intersection(parentsTemp, descUIArray);
 
         if (parentsInArray.length > 0) {
@@ -714,7 +699,10 @@ MeshTree.prototype.clusterDescUIs = co.wrap(function* (idArray) {
 * Tests whether a descriptor has pharmacological actions (in other words, if the descriptor is a drug).
 * If true, returns array of descUI mappings of the pharmacological action, otherwise returns null.
 */
-MeshTree.prototype.getPharmacologicalAction = co.wrap(function* (ui) {
+MeshTree.prototype.getPharmacologicalAction = co.wrap(function* (opts) {
+  opts = opts || {};
+  let ui = this.formatID(opts.id, 'mesh');
+  let format = opts.format || 'rdf';
 
   let result = yield this.dbSearch({
     subject: MESH + ui,
@@ -725,7 +713,7 @@ MeshTree.prototype.getPharmacologicalAction = co.wrap(function* (ui) {
   if (_.isEmpty(result)) {
     return null;
   } else {
-    return _.unique(result.map(res => res['descUI'].replace(MESH, '')));
+    return _.unique(result.map(res => this.formatID(res['descUI'], format)));
   }
 
 });
@@ -733,15 +721,18 @@ MeshTree.prototype.getPharmacologicalAction = co.wrap(function* (ui) {
 /*
  * Performs mapping of MeSH concepts onto Schema.org classes
  */
-MeshTree.prototype.getSchemaOrgType = co.wrap(function* (ui) {
+MeshTree.prototype.getSchemaOrgType = co.wrap(function* (opts) {
+  opts = opts || {};
+  let ui = this.formatID(opts.id, 'mesh');
+
   let schemaOrgType = 'MedicalEntity';
 
-  let pharmActions = yield this.getPharmacologicalAction(ui);
+  let pharmActions = yield this.getPharmacologicalAction({ id: ui, format: 'mesh' });
   if (pharmActions) {
     schemaOrgType = 'Drug';
   }
 
-  let treeNums = yield this.getTreeNumbersByDescUI(ui);
+  let treeNums = yield this.getTreeNumbers({ id: ui, format: 'mesh' });
   if (treeNums.some(tn => /^C\d+/.test(tn))) {
     schemaOrgType = 'MedicalCondition';
     if (treeNums.some(tn => /^(C01|C02|C03)\./.test(tn))) {
@@ -793,22 +784,22 @@ MeshTree.prototype.createPropertiesObject = co.wrap(function* (propRequestObj) {
     let preferredTerm;
     switch (property) {
       case 'name':
-        preferredTerm = yield this.getPreferredTermByDescUI(ui);
+        preferredTerm = yield this.getPrefTerm({ id: ui });
         propertiesObj[property] = preferredTerm;
         break;
       case 'description':
-        let scopeNotes = yield this.getScopeNoteByDescUI(ui);
+        let scopeNotes = yield this.getScopeNote({ id: ui });
         propertiesObj[property] = scopeNotes;
         break;
       case 'synonyms':
-        preferredTerm = yield this.getPreferredTermByDescUI(ui);
-        let synonyms = yield this.getAllTermsByDescUI(ui);
+        preferredTerm = yield this.getPrefTerm({ id: ui });
+        let synonyms = yield this.getAllTerms({ id: ui });
         let preferredTermIndex = synonyms.indexOf(preferredTerm);
         if (~preferredTermIndex) synonyms.splice(preferredTermIndex, 1);
         propertiesObj[property] = synonyms;
         break;
       case 'schemaOrgType':
-        let schemaOrgType = yield this.getSchemaOrgType(ui);
+        let schemaOrgType = yield this.getSchemaOrgType({ id: ui });
         propertiesObj[property] = schemaOrgType;
         break;
       case 'codeValue':
