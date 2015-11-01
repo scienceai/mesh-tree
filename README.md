@@ -97,12 +97,12 @@ Returns array of all protocol (e.g., cancer-related) supplementary record UIs
 `opts`:
   - `format`: `rdf` or `mesh`
 
-###### `getWikipediaEntryByDescUI(opts)`
+###### `getWikiEntry(opts)`
 
 Returns the cleaned text output of the wikipedia page corresponding to the descriptor record UI
 
 `opts`:
-  - `id`
+  - `id`: either RDF URL id or MeSH UI
   - `level`:
     - `0` - abstract only
     - `1` - all text

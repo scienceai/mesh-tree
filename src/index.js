@@ -123,12 +123,10 @@ MeshTree.prototype.getAllSCRProtocolUIs = co.wrap(function* (opts) {
 *   `0` - abstract only
 *   `1` - all text
 */
-MeshTree.prototype.getWikipediaEntryByDescUI = co.wrap(function* (opts) {
-
-  if (_.isArray(opts)) opts = opts[0];
-
-  const descUI = this.format(opts.id, 'mesh');
-  const level = opts.level;
+MeshTree.prototype.getWikiEntry = co.wrap(function* (opts) {
+  opts = opts || {};
+  let descUI = this.formatID(opts.id, 'mesh');
+  let level = opts.level || 0;
 
   let concept = yield this.getPreferredTermByDescUI(descUI);
   let wiki = yield wikipedia.getMainSections(concept.replace(/ /g, '+'));

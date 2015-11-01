@@ -1,10 +1,8 @@
 {
   "parser": "babel-eslint",
   "rules": {
-    "semi": [
-        2,
-        "always"
-    ],
+    "semi": [2, "always"],
+    "quotes": [2, "single"],
     "no-eval": 2,
     "no-console": 0,
     "no-undef": 0,
