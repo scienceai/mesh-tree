@@ -129,15 +129,14 @@ Example: `'D03.438.221.173'` returns `'D000001'`
   - `treeNum`: either RDF URL id with tree number or tree number by itself
   - `format`: `rdf` or `mesh` for output format
 
-###### `getPrefConceptUI(opts)`
+###### `getCategory(opts)`
 
-Returns preferred concept UI for descriptor record UI.
+Returns top-level MeSH category
 
-Example: `'D000001'` returns `'M0000001'`
+Example: `'D000001'` returns `'Chemicals and Drugs'`
 
 `opts`:
   - `id`: either RDF URL id or MeSH UI
-  - `format`: `rdf` or `mesh` for output format
 
 ###### `getPrefTerm(opts)`
 

@@ -208,24 +208,21 @@ MeshTree.prototype.treeNumberToUI = co.wrap(function* (opts) {
 });
 
 /*
-* Returns preferred concept UI for descriptor record UI
+* Returns top-level MeSH category
 *
-* Example: 'D000001' returns 'M0000001'
+* Example: 'D000001' returns 'Chemicals and Drugs'
 */
-MeshTree.prototype.getPrefConceptUI = co.wrap(function* (opts) {
+MeshTree.prototype.getCategory = co.wrap(function* (opts) {
   opts = opts || {};
   let descUI = this.formatID(opts.id, 'mesh');
-  let format = opts.format || 'rdf';
 
-  let result = yield this.dbSearch({
-    subject: MESH + descUI,
-    predicate: MESHV + 'preferredConcept',
-    object: this.db.v('conceptUI')
-  }, {});
+  let categoryMap = new Map([['A', 'Anatomy'], ['B', 'Organisms'], ['C', 'Diseases'], ['D', 'Chemicals and Drugs'], ['E', 'Analytical, Diagnostic and Therapeutic Techniques and Equipment'], ['F', 'Psychiatry and Psychology'], ['G', 'Phenomena and Processes'], ['H', 'Disciplines and Occupations'], ['I', 'Anthropology, Education, Sociology and Social Phenomena'], ['J', 'Technology, Industry, Agriculture'], ['K', 'Humanities'], ['L', 'Information Science'], ['M', 'Named Groups'], ['N', 'Health Care'], ['V', 'Publication Characteristics'], ['Z', 'Geographicals']]);
 
-  if (_.isEmpty(result)) return null;
+  let treeNums = yield this.getTreeNumbers({ id: descUI, format: 'mesh' });
+  let categories = treeNums.map(t => t[0]);
 
-  return this.formatID(result[0]['conceptUI'], format);
+  // get most represented category if multiply present
+  return categoryMap.get(_(categories).countBy().pairs().max(kv => kv[1])[0]);
 
 });
 
@@ -321,10 +318,16 @@ MeshTree.prototype.getScopeNote = co.wrap(function* (opts) {
   opts = opts || {};
   let descUI = this.formatID(opts.id, 'mesh');
 
-  let conceptUI = yield this.getPrefConceptUI({ id: descUI, format: 'mesh' });
+  let prefConcept = yield this.dbSearch({
+    subject: MESH + descUI,
+    predicate: MESHV + 'preferredConcept',
+    object: this.db.v('conceptUI')
+  }, {});
+
+  if (_.isEmpty(prefConcept)) return '';
 
   let result = yield this.dbSearch({
-    subject: MESH + conceptUI,
+    subject: prefConcept[0]['conceptUI'],
     predicate: MESHV + 'scopeNote',
     object: this.db.v('scopeNote')
   }, {});
