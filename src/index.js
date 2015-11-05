@@ -50,18 +50,31 @@ class MeshTree {
 
 /*
 * Returns array of all descriptor records
+*
+* Four types of descriptor records exist:
+* - TopicalDescriptor
+* - GeographicalDescriptor
+* - PublicationType
+* - CheckTag
+*
+* By default, only TopicalDescriptor and GeographicalDescriptor are included
 */
 MeshTree.prototype.getAllDescUIs = co.wrap(function* (opts) {
   opts = opts || {};
   let format = opts.format || 'rdf';
+  let classes = opts.classes || ['TopicalDescriptor', 'GeographicalDescriptor'];
 
-  let result = yield this.dbSearch({
-    subject: this.db.v('desc'),
-    predicate: RDF + 'type',
-    object: MESHV + 'TopicalDescriptor'
-  }, {});
+  let results = [];
+  for (let cl of classes) {
+    let result = yield this.dbSearch({
+      subject: this.db.v('desc'),
+      predicate: RDF + 'type',
+      object: MESHV + cl
+    }, {});
+    results = results.concat(result);
+  }
 
-  return _.map(result, item => this.formatID(item['desc'], format));
+  return _.map(results, item => this.formatID(item['desc'], format));
 
 });
 

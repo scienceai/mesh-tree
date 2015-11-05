@@ -71,10 +71,11 @@ To use with multiple processes, pass in a [`multilevel`](https://github.com/juli
 
 ###### `getAllDescUIs(opts)`
 
-Returns array of all descriptor record UIs
+Returns array of all descriptor record UIs. Four types of descriptor records exist: `TopicalDescriptor`, `GeographicalDescriptor`, `PublicationType`, `CheckTag`. By default, only `TopicalDescriptor` and `GeographicalDescriptor` are included.
 
 `opts`:
   - `format`: `rdf` or `mesh` for output format
+  - `classes`: array of descriptor record types to include (default `['TopicalDescriptor', 'GeographicalDescriptor']`)
 
 ###### `getAllSCRChemicalUIs(opts)`
 

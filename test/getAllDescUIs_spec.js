@@ -1,11 +1,11 @@
 describe('getAllDescUIs', function () {
   this.timeout(10*1000);
 
-  describe('get array of all descriptors as MeSH uis', () => {
+  describe('get array of all descriptors (specified TopicalDescriptor only) as MeSH uis', () => {
     let allDescUIs;
 
     before(done => {
-      meshTree.getAllDescUIs({ format: 'mesh' }).then(result => {
+      meshTree.getAllDescUIs({ format: 'mesh', classes: ['TopicalDescriptor'] }).then(result => {
         allDescUIs = result;
         done();
       });
@@ -33,11 +33,11 @@ describe('getAllDescUIs', function () {
 
   });
 
-  describe('get array of all descriptors as RDF ids', () => {
+  describe('get array of all descriptors (specified TopicalDescriptor only) as RDF ids', () => {
     let allDescUIs;
 
     before(done => {
-      meshTree.getAllDescUIs({ format: 'rdf' }).then(result => {
+      meshTree.getAllDescUIs({ format: 'rdf', classes: ['TopicalDescriptor'] }).then(result => {
         allDescUIs = result;
         done();
       });
