@@ -1,9 +1,9 @@
 import request from 'request';
-import Bluebird from 'bluebird';
+import Promise from 'bluebird';
 
-let requestPromise = Bluebird.promisify(request, {multiArgs: true});
+let requestPromise = Promise.promisify(request, {multiArgs: true});
 
-export function* getMainSections(articleTitle) {
+let getMainSections = Promise.coroutine(function* (articleTitle) {
 
   let url = 'http://en.wikipedia.org/w/api.php?redirects=true&format=json&utf8=true&action=query&titles=' + articleTitle + '&prop=extracts&explaintext=true&exsectionformat=wiki&continue=';
 
@@ -80,4 +80,6 @@ export function* getMainSections(articleTitle) {
     return sections;
   }
 
-}
+});
+
+export { getMainSections };

@@ -2,8 +2,7 @@ import levelgraph from 'levelgraph';
 import levelgraphN3 from 'levelgraph-n3';
 import level from 'level';
 import _ from 'lodash';
-import Bluebird from 'bluebird';
-import co from 'co';
+import Promise from 'bluebird';
 import * as wikipedia from './helper/wikipedia';
 import permutations from './helper/permutations';
 
@@ -25,7 +24,7 @@ class MeshTree {
     }
 
     this.db = levelgraphN3(levelgraph(DB));
-    this.dbSearch = Bluebird.promisify(this.db.search, {multiArgs: false});
+    this.dbSearch = Promise.promisify(this.db.search, {multiArgs: false});
 
   }
 
@@ -59,7 +58,7 @@ class MeshTree {
 *
 * By default, only TopicalDescriptor and GeographicalDescriptor are included
 */
-MeshTree.prototype.getAllDescUIs = co.wrap(function* (opts) {
+MeshTree.prototype.getAllDescUIs = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let format = opts.format || 'rdf';
   let classes = opts.classes || ['TopicalDescriptor', 'GeographicalDescriptor'];
@@ -81,7 +80,7 @@ MeshTree.prototype.getAllDescUIs = co.wrap(function* (opts) {
 /*
 * Returns array of all chemical supplementary records
 */
-MeshTree.prototype.getAllSCRChemicalUIs = co.wrap(function* (opts) {
+MeshTree.prototype.getAllSCRChemicalUIs = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let format = opts.format || 'rdf';
 
@@ -98,7 +97,7 @@ MeshTree.prototype.getAllSCRChemicalUIs = co.wrap(function* (opts) {
 /*
 * Returns array of all disease (rare) supplementary records
 */
-MeshTree.prototype.getAllSCRDiseaseUIs = co.wrap(function* (opts) {
+MeshTree.prototype.getAllSCRDiseaseUIs = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let format = opts.format || 'rdf';
 
@@ -115,7 +114,7 @@ MeshTree.prototype.getAllSCRDiseaseUIs = co.wrap(function* (opts) {
 /*
 * Returns array of all protocol (e.g., cancer-related) supplementary records
 */
-MeshTree.prototype.getAllSCRProtocolUIs = co.wrap(function* (opts) {
+MeshTree.prototype.getAllSCRProtocolUIs = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let format = opts.format || 'rdf';
 
@@ -136,7 +135,7 @@ MeshTree.prototype.getAllSCRProtocolUIs = co.wrap(function* (opts) {
 *   `0` - abstract only
 *   `1` - all text
 */
-MeshTree.prototype.getWikiEntry = co.wrap(function* (opts) {
+MeshTree.prototype.getWikiEntry = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let descUI = this.formatID(opts.id, 'mesh');
   let level = opts.level || 0;
@@ -180,7 +179,7 @@ MeshTree.prototype.getWikiEntry = co.wrap(function* (opts) {
 *
 * Example: 'D000001' returns ['D03.438.221.173']
 */
-MeshTree.prototype.getTreeNumbers = co.wrap(function* (opts) {
+MeshTree.prototype.getTreeNumbers = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let descUI = this.formatID(opts.id, 'mesh');
   let format = opts.format || 'rdf';
@@ -201,7 +200,7 @@ MeshTree.prototype.getTreeNumbers = co.wrap(function* (opts) {
 *
 * Example: 'D03.438.221.173' returns 'D000001'
 */
-MeshTree.prototype.treeNumberToUI = co.wrap(function* (opts) {
+MeshTree.prototype.treeNumberToUI = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let treeNum = this.formatID(opts.treeNum, 'mesh');
   let format = opts.format || 'rdf';
@@ -225,7 +224,7 @@ MeshTree.prototype.treeNumberToUI = co.wrap(function* (opts) {
 *
 * Example: 'D000001' returns 'Chemicals and Drugs'
 */
-MeshTree.prototype.getCategory = co.wrap(function* (opts) {
+MeshTree.prototype.getCategory = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let descUI = this.formatID(opts.id, 'mesh');
 
@@ -245,7 +244,7 @@ MeshTree.prototype.getCategory = co.wrap(function* (opts) {
 *
 * Example: 'D000001' returns 'Calcimycin'
 */
-MeshTree.prototype.getPrefTerm = co.wrap(function* (opts) {
+MeshTree.prototype.getPrefTerm = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let descUI = this.formatID(opts.id, 'mesh');
 
@@ -275,7 +274,7 @@ MeshTree.prototype.getPrefTerm = co.wrap(function* (opts) {
 *
 * Example: 'D000001' returns [ 'A23187, Antibiotic', 'Antibiotic A23187', 'A23187', 'A 23187', 'A-23187', 'Calcimycin' ]
 */
-MeshTree.prototype.getAllTerms = co.wrap(function* (opts) {
+MeshTree.prototype.getAllTerms = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let descUI = this.formatID(opts.id, 'mesh');
 
@@ -327,7 +326,7 @@ MeshTree.prototype.getAllTerms = co.wrap(function* (opts) {
 *
 * Example: 'D000001', via concept 'M0000001', returns 'An ionophorous, polyether antibiotic from Streptomyces chartreusensis. It binds and transports CALCIUM and other divalent cations across membranes and uncouples oxidative phosphorylation while inhibiting ATPase of rat liver mitochondria. The substance is used mostly as a biochemical tool to study the role of divalent cations in various biological systems.'
 */
-MeshTree.prototype.getScopeNote = co.wrap(function* (opts) {
+MeshTree.prototype.getScopeNote = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let descUI = this.formatID(opts.id, 'mesh');
 
@@ -366,7 +365,7 @@ MeshTree.prototype.getScopeNote = co.wrap(function* (opts) {
 *
 * Example: 'C025735' returns ['D001286', 'D002164', 'D012602']
 */
-MeshTree.prototype.getParents = co.wrap(function* (opts) {
+MeshTree.prototype.getParents = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let ui = this.formatID(opts.id, 'mesh');
   let format = opts.format || 'rdf';
@@ -406,7 +405,7 @@ MeshTree.prototype.getParents = co.wrap(function* (opts) {
 * Example: 'D000001' returns ['D001583', 'D006574', 'D006571']
 *          'D005138' returns ['D005123', 'D006197', 'D005145', 'D012679', 'D034582', 'D006257', 'D001829']
 */
-MeshTree.prototype.getAncestors = co.wrap(function* (opts) {
+MeshTree.prototype.getAncestors = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let descUI = this.formatID(opts.id, 'mesh');
   let format = opts.format || 'rdf';
@@ -439,7 +438,7 @@ MeshTree.prototype.getAncestors = co.wrap(function* (opts) {
 *
 * Example: 'D012343' returns ['D012345', 'D000926', 'D012346']
 */
-MeshTree.prototype.getChildren = co.wrap(function* (opts) {
+MeshTree.prototype.getChildren = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let descUI = this.formatID(opts.id, 'mesh');
   let format = opts.format || 'rdf';
@@ -476,7 +475,7 @@ MeshTree.prototype.getChildren = co.wrap(function* (opts) {
 *
 * Example: 'D015834' returns ['D012345', 'D000926', 'D012346']
 */
-MeshTree.prototype.getSiblings = co.wrap(function* (opts) {
+MeshTree.prototype.getSiblings = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let descUI = this.formatID(opts.id, 'mesh');
   let format = opts.format || 'rdf';
@@ -504,7 +503,7 @@ MeshTree.prototype.getSiblings = co.wrap(function* (opts) {
 *
 * Example: ['D000926', 'D012345'] returns ['D012343']
 */
-MeshTree.prototype.getCommonAncestors = co.wrap(function* (opts) {
+MeshTree.prototype.getCommonAncestors = Promise.coroutine(function* (opts) {
   opts = opts || {};
   if (!_.isArray(opts.ids)) throw new Error('opts.ids not an array.');
   let descUIArray = opts.ids.map(id => this.formatID(id, 'mesh'));
@@ -577,7 +576,7 @@ MeshTree.prototype.getCommonAncestors = co.wrap(function* (opts) {
 /*
 * Tests whether or not id2 is a descendant of id1 (child of >=1 depth)
 */
-MeshTree.prototype.isDescendantOf = co.wrap(function* (id1, id2) {
+MeshTree.prototype.isDescendantOf = Promise.coroutine(function* (id1, id2) {
   let descUI1 = this.formatID(id1, 'mesh');
   let descUI2 = this.formatID(id2, 'mesh');
 
@@ -612,7 +611,7 @@ MeshTree.prototype.isDescendantOf = co.wrap(function* (id1, id2) {
 /*
 * Creates a subtree from a flat list of descriptor record UIs (as `@id`s) based on parent-child relationships within the MeSH ontology tree.
 */
-MeshTree.prototype.clusterDescUIs = co.wrap(function* (idArray) {
+MeshTree.prototype.clusterDescUIs = Promise.coroutine(function* (idArray) {
 
   // input must be array
   if (!_.isArray(idArray)) throw new Error('input not an array.');
@@ -715,7 +714,7 @@ MeshTree.prototype.clusterDescUIs = co.wrap(function* (idArray) {
 * Tests whether a descriptor has pharmacological actions (in other words, if the descriptor is a drug).
 * If true, returns array of descUI mappings of the pharmacological action, otherwise returns null.
 */
-MeshTree.prototype.getPharmacologicalAction = co.wrap(function* (opts) {
+MeshTree.prototype.getPharmacologicalAction = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let ui = this.formatID(opts.id, 'mesh');
   let format = opts.format || 'rdf';
@@ -737,7 +736,7 @@ MeshTree.prototype.getPharmacologicalAction = co.wrap(function* (opts) {
 /*
  * Performs mapping of MeSH concepts onto Schema.org classes
  */
-MeshTree.prototype.getSchemaOrgType = co.wrap(function* (opts) {
+MeshTree.prototype.getSchemaOrgType = Promise.coroutine(function* (opts) {
   opts = opts || {};
   let ui = this.formatID(opts.id, 'mesh');
 
@@ -787,7 +786,7 @@ MeshTree.prototype.getSchemaOrgType = co.wrap(function* (opts) {
 /*
 * Creates properties object from descriptor id
 */
-MeshTree.prototype.createPropertiesObject = co.wrap(function* (propRequestObj) {
+MeshTree.prototype.createPropertiesObject = Promise.coroutine(function* (propRequestObj) {
   let id = propRequestObj['@id'];
   let properties = propRequestObj.properties;
   let ui = id.replace(MESH, '');
