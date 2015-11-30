@@ -7,7 +7,7 @@
 Utility functions for traversing the Medical Subject Heading (MeSH) ontology tree
 
 <p align="center">
-  <img src="./extras/count_over_time.png", width="500"/>
+  <img src="./mesh_over_time.png", width="500"/>
 </p>
 
 Medical Subject Headings (MeSH) is an ontology for classifying information within the biomedical domain.
