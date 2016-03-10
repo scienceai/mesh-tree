@@ -2,19 +2,19 @@ global.chai = require('chai');
 global.expect = require('chai').expect;
 global.assert = require('chai').assert;
 
-var MeshTree = require('../src/index.js');
+import MeshTree from '../src';
 
-var multilevel = require('multilevel');
-var net = require('net');
-var level = require('level');
+import multilevel from 'multilevel';
+import net from 'net';
+import level from 'level';
 
-var db = level('dbtest');
+let db = level('dbtest');
 net.createServer(function (con) {
   con.pipe(multilevel.server(db)).pipe(con);
 }).listen(7776);
 
-var db_client = multilevel.client();
-var con = net.connect(7776);
+let db_client = multilevel.client();
+let con = net.connect(7776);
 con.pipe(db_client.createRpcStream()).pipe(con);
 
 global.meshTree = new MeshTree({
