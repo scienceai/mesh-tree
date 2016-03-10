@@ -1,7 +1,7 @@
 sudo: false
 language: node_js
 node_js:
-  - "4"
+  - "5"
 before_script:
   - npm run initdb-test
 script:
