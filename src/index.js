@@ -234,7 +234,7 @@ MeshTree.prototype.getCategory = Promise.coroutine(function* (opts) {
   let categories = treeNums.map(t => t[0]);
 
   // get most represented category if multiply present
-  return categoryMap.get(_(categories).countBy().pairs().max(kv => kv[1])[0]);
+  return categoryMap.get(_(categories).countBy().toPairs().max(kv => kv[1])[0]);
 
 });
 
@@ -379,7 +379,7 @@ MeshTree.prototype.getParents = Promise.coroutine(function* (opts) {
       object: this.db.v('descUI')
     }, {});
 
-    return _.unique(result.map(res => this.formatID(res['descUI'], format)));
+    return _.uniq(result.map(res => this.formatID(res['descUI'], format)));
 
   } else if (/^C\d+$/.test(ui)) {
     // supplemetal record UI
@@ -391,7 +391,7 @@ MeshTree.prototype.getParents = Promise.coroutine(function* (opts) {
     }, {});
 
     // get rid of descriptor qualifiers as well
-    return _.unique(result.map(res => this.formatID(res['descUI'], format).replace(/Q\d+/g, '')));
+    return _.uniq(result.map(res => this.formatID(res['descUI'], format).replace(/Q\d+/g, '')));
 
   } else {
     return [];
@@ -428,7 +428,7 @@ MeshTree.prototype.getAncestors = Promise.coroutine(function* (opts) {
     hasParents = nodesTemp.length > 0;
   }
 
-  return _.unique(parents).map(p => this.formatID(p, format));
+  return _.uniq(parents).map(p => this.formatID(p, format));
 
 });
 
@@ -527,7 +527,7 @@ MeshTree.prototype.getCommonAncestors = Promise.coroutine(function* (opts) {
     let branches = [];
     for (let branch of permut[0].split('.')) {
 
-      let isCommonBranch = _.all(
+      let isCommonBranch = _.every(
         _.map(permut.slice(1, permut.length), (x) => (branch === x.split('.')[depth]))
       );
 
@@ -541,7 +541,7 @@ MeshTree.prototype.getCommonAncestors = Promise.coroutine(function* (opts) {
     let commonAncestorTreeNum = branches.join('.');
 
     // should not be ancestor of common ancestor already in common ancestors array
-    let isBroader = _.any(
+    let isBroader = _.some(
       _.map(commonAncestorsTreeNums, (t) => _.startsWith(t, commonAncestorTreeNum))
     );
 
@@ -728,7 +728,7 @@ MeshTree.prototype.getPharmacologicalAction = Promise.coroutine(function* (opts)
   if (_.isEmpty(result)) {
     return null;
   } else {
-    return _.unique(result.map(res => this.formatID(res['descUI'], format)));
+    return _.uniq(result.map(res => this.formatID(res['descUI'], format)));
   }
 
 });
@@ -798,31 +798,37 @@ MeshTree.prototype.createPropertiesObject = Promise.coroutine(function* (propReq
   for (let property of properties) {
     let preferredTerm;
     switch (property) {
-      case 'name':
+      case 'name': {
         preferredTerm = yield this.getPrefTerm({ id: ui });
         propertiesObj[property] = preferredTerm;
         break;
-      case 'description':
+      }
+      case 'description': {
         let scopeNotes = yield this.getScopeNote({ id: ui });
         propertiesObj[property] = scopeNotes;
         break;
-      case 'synonyms':
+      }
+      case 'synonyms': {
         preferredTerm = yield this.getPrefTerm({ id: ui });
         let synonyms = yield this.getAllTerms({ id: ui });
         let preferredTermIndex = synonyms.indexOf(preferredTerm);
         if (~preferredTermIndex) synonyms.splice(preferredTermIndex, 1);
         propertiesObj[property] = synonyms;
         break;
-      case 'schemaOrgType':
+      }
+      case 'schemaOrgType': {
         let schemaOrgType = yield this.getSchemaOrgType({ id: ui });
         propertiesObj[property] = schemaOrgType;
         break;
-      case 'codeValue':
+      }
+      case 'codeValue': {
         propertiesObj[property] = ui;
         break;
-      case 'codingSystem':
+      }
+      case 'codingSystem': {
         propertiesObj[property] = 'MeSH';
         break;
+      }
       default:
         propertiesObj[property] = null;
     }
