@@ -8,7 +8,7 @@
     "initdb": "node ./node_modules/levelgraph-n3/import.js $PATH_TO_MESH_RDF -o $PATH_TO_MESH_DB",
     "initdb-quiet": "node ./node_modules/levelgraph-n3/import.js --quiet $PATH_TO_MESH_RDF -o $PATH_TO_MESH_DB",
     "test": "./node_modules/.bin/mocha --reporter spec --require @babel/register",
-    "build": "rm -rf dist && npx babel src --out-dir dist",
+    "build": "rm -rf dist && node ./node_modules/@babel/cli/bin/babel.js src --out-dir dist",
     "coverage": "rm -rf coverage && babel-node -r node_modules/isparta/bin/isparta cover --report lcovonly node_modules/mocha/bin/_mocha -- --reporter spec --require @babel/register --bail",
     "publish-coverage": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "cover": "babel-node ./node_modules/isparta/bin/isparta cover --report lcovonly ./node_modules/mocha/bin/_mocha -- --reporter dot",
