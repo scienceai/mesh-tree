@@ -295,7 +295,7 @@ Example: `'D000001' (Calcimycin)` returns `['D000900', 'D061207'] (Anti-Bacteria
   - `id`: either RDF URL id or MeSH UI
   - `format`: `rdf` or `mesh` for output format
 
-###### `getSchemaOrgTypes(opts)`
+###### `getSchemaOrgType(opts)`
 
 Performs mapping of MeSH concepts onto Schema.org classes (e.g., Drug)
 
